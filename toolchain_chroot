@@ -1,0 +1,1433 @@
+#!/bin/bash
+export PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+export LD_LIBRARY_PATH=/usr/local/lib64:/usr/local/lib:/lib64:/lib:/usr/lib64:/usr/lib
+export C_INCLUDE_PATH=/usr/local/include/ncurses
+export GCONV_PATH=/usr/local/lib64/gconv
+export PKG_CONFIG_PATH=/usr/local/lib64/pkgconfig
+export PYTHON=/usr/local/bin/python3
+export PYTHONHOME=/usr/local
+export PERL5LIB=/usr/local/lib/perl5/5.32.0
+export XML_CATALOG_FILES="/usr/local/etc/xml/catalog"
+export SGML_CATALOG_FILES="/usr/local/etc/sgml/catalog"
+export LANGUAGE=en_US.UTF-8
+export LANG=en_US.UTF-8
+export LC_ALL=en_US.UTF-8
+
+#glibc location fix
+for f in /usr/local/lib64/*_nonshared.a; do
+file=$(echo "$f" | sed 's#/usr/local/lib64/##g')
+if [ ! -e "/usr/lib64/$file" ]; then sudo ln -s -v "/usr/local/lib64/$file" "/usr/lib64/$file"; fi
+done
+for f in /usr/local/lib64/*.o; do
+file=$(echo "$f" | sed 's#/usr/local/lib64/##g')
+if [ ! -e "/usr/lib64/$file" ]; then sudo ln -s -v "/usr/local/lib64/$file" "/usr/lib64/$file"; fi
+done
+
+cd /home/chronos/
+
+build_all=1
+
+if [ ! -z $build_all ] || [ ! -z $build_diffutils ]; then
+
+mkdir -p ./diffutils
+curl https://ftp.gnu.org/gnu/diffutils/diffutils-3.7.tar.xz -o ./diffutils.tar.xz
+tar xf ./diffutils.tar.xz -C ./diffutils --strip 1
+rm ./diffutils.tar.xz
+cd ./diffutils
+./configure --prefix=/usr/local --libdir=/usr/local/lib64
+make -j$(($(nproc)-1))
+make install
+make DESTDIR=/out install
+cd ..
+rm -rf ./diffutils
+read -p "Press any key to resume ..."
+
+fi
+
+if [ ! -z $build_all ] || [ ! -z $build_patch ]; then
+
+mkdir -p ./patch
+curl https://ftp.gnu.org/gnu/patch/patch-2.7.6.tar.gz -o ./patch.tar.gz
+tar zxf ./patch.tar.gz -C ./patch --strip 1
+rm ./patch.tar.gz
+cd ./patch
+./configure --prefix=/usr/local --libdir=/usr/local/lib64
+make -j$(($(nproc)-1))
+make install
+make DESTDIR=/out install
+cd ..
+rm -rf ./patch
+read -p "Press any key to resume ..."
+
+fi
+
+if [ ! -z $build_all ] || [ ! -z $build_gawk ]; then
+
+mkdir -p ./gawk
+curl https://ftp.gnu.org/gnu/gawk/gawk-5.1.0.tar.gz -o ./gawk.tar.gz
+tar zxf ./gawk.tar.gz -C ./gawk --strip 1
+rm ./gawk.tar.gz
+cd ./gawk
+./configure --prefix=/usr/local --libdir=/usr/local/lib64
+make -j$(($(nproc)-1))
+make install
+make DESTDIR=/out install
+cd ..
+rm -rf ./gawk
+read -p "Press any key to resume ..."
+
+fi
+
+if [ ! -z $build_all ] || [ ! -z $build_sed ]; then
+
+mkdir -p ./sed
+curl https://ftp.gnu.org/gnu/sed/sed-4.8.tar.gz -o ./sed.tar.gz
+tar zxf ./sed.tar.gz -C ./sed --strip 1
+rm ./sed.tar.gz
+cd ./sed
+./configure --prefix=/usr/local --libdir=/usr/local/lib64
+make -j$(($(nproc)-1))
+make install
+make DESTDIR=/out install
+cd ..
+rm -rf ./sed
+read -p "Press any key to resume ..."
+
+fi
+
+if [ ! -z $build_all ] || [ ! -z $build_libressl ]; then
+
+mkdir -p ./libressl
+curl https://ftp.openbsd.org/pub/OpenBSD/LibreSSL/libressl-3.2.1.tar.gz -o ./libressl.tar.gz
+tar zxf ./libressl.tar.gz -C ./libressl --strip 1
+rm ./libressl.tar.gz
+cd ./libressl
+./configure --prefix=/usr/local --libdir=/usr/local/lib64
+make -j$(($(nproc)-1))
+make install
+make DESTDIR=/out install
+cd ..
+rm -rf ./libressl
+read -p "Press any key to resume ..."
+
+fi
+
+if [ ! -z $build_all ] || [ ! -z $build_perl ]; then
+
+mkdir -p ./perl
+curl https://www.cpan.org/src/5.0/perl-5.32.0.tar.gz -o ./perl.tar.gz
+tar zxf ./perl.tar.gz -C ./perl --strip 1
+rm ./perl.tar.gz
+cd ./perl
+sh Configure -des -Dprefix='/usr/local' -Dsiteprefix='/usr/local' -Dvendorprefix='/usr/local' -Dman1dir=/usr/local/share/man/man1 -Dman3dir=/usr/local/share/man/man3 -Dusethreads
+make -j$(($(nproc)-1))
+make install
+make DESTDIR=/out install
+cd ..
+rm -rf ./perl
+read -p "Press any key to resume ..."
+
+fi
+
+if [ ! -z $build_all ] || [ ! -z $build_m4 ]; then
+
+mkdir -p ./m4
+curl https://ftp.gnu.org/gnu/m4/m4-1.4.18.tar.gz -o ./m4.tar.gz
+tar zxf ./m4.tar.gz -C ./m4 --strip 1
+rm ./m4.tar.gz
+cd ./m4
+sed -i 's/IO_ftrylockfile/IO_EOF_SEEN/' lib/*.c
+echo "#define _IO_IN_BACKUP 0x100" >> lib/stdio-impl.h
+./configure --prefix=/usr/local --libdir=/usr/local/lib64
+make -j$(($(nproc)-1))
+make install
+make DESTDIR=/out install
+cd ..
+rm -rf ./m4
+read -p "Press any key to resume ..."
+
+fi
+
+if [ ! -z $build_all ] || [ ! -z $build_autoconf ]; then
+
+mkdir -p ./autoconf
+curl https://ftp.gnu.org/gnu/autoconf/autoconf-2.69.tar.gz -o ./autoconf.tar.gz
+tar zxf ./autoconf.tar.gz -C ./autoconf --strip 1
+rm ./autoconf.tar.gz
+cd ./autoconf
+./configure --prefix=/usr/local --libdir=/usr/local/lib64
+make -j$(($(nproc)-1))
+make install
+make DESTDIR=/out install
+cd ..
+rm -rf ./autoconf
+read -p "Press any key to resume ..."
+
+fi
+
+if [ ! -z $build_all ] || [ ! -z $build_autoconf_archive ]; then
+
+mkdir -p ./autoconf-archive
+curl https://ftp.gnu.org/gnu/autoconf-archive/autoconf-archive-2019.01.06.tar.xz -o ./autoconf-archive.tar.xz
+tar xf ./autoconf-archive.tar.xz -C ./autoconf-archive --strip 1
+rm ./autoconf-archive.tar.xz
+cd ./autoconf-archive
+./configure --prefix=/usr/local --libdir=/usr/local/lib64
+make -j$(($(nproc)-1))
+make install
+make DESTDIR=/out install
+cd ..
+rm -rf ./autoconf-archive
+read -p "Press any key to resume ..."
+
+fi
+
+if [ ! -z $build_all ] || [ ! -z $build_automake ]; then
+
+mkdir -p ./automake
+curl https://ftp.gnu.org/gnu/automake/automake-1.16.tar.gz -o ./automake.tar.gz
+tar zxf ./automake.tar.gz -C ./automake --strip 1
+rm ./automake.tar.gz
+cd ./automake
+./configure --prefix=/usr/local --libdir=/usr/local/lib64
+make -j$(($(nproc)-1))
+make install
+make DESTDIR=/out install
+cd ..
+rm -rf ./automake
+read -p "Press any key to resume ..."
+
+fi
+
+if [ ! -z $build_all ] || [ ! -z $build_libtool ]; then
+
+mkdir -p ./libtool
+curl https://mirror.cyberbits.eu/gnu/libtool/libtool-2.4.6.tar.gz -o ./libtool.tar.gz
+tar zxf ./libtool.tar.gz -C ./libtool --strip 1
+rm ./libtool.tar.gz
+cd ./libtool
+./configure --prefix=/usr/local --libdir=/usr/local/lib64
+make -j$(($(nproc)-1))
+make install
+make DESTDIR=/out install
+cd ..
+rm -rf ./libtool
+read -p "Press any key to resume ..."
+
+fi
+
+if [ ! -z $build_all ] || [ ! -z $build_bzip2 ]; then
+
+mkdir -p ./bzip2
+curl https://sourceware.org/pub/bzip2/bzip2-1.0.8.tar.gz -o ./bzip2.tar.gz
+tar zxf ./bzip2.tar.gz -C ./bzip2 --strip 1
+rm ./bzip2.tar.gz
+cd ./bzip2
+sed -i "s#\$(PREFIX)/lib#\$(PREFIX)/lib64#g" Makefile
+make -f Makefile-libbz2_so
+make
+make install PREFIX=/usr/local
+make install PREFIX=/out/usr/local
+cp ./libbz2.so* /out/usr/local/lib64/
+cd ..
+rm -rf ./bzip2
+read -p "Press any key to resume ..."
+
+fi
+
+if [ ! -z $build_all ] || [ ! -z $build_xz ]; then
+
+mkdir -p ./xz
+curl -L https://sourceforge.net/projects/lzmautils/files/xz-5.2.5.tar.gz/download# -o ./xz.tar.gz
+tar zxf ./xz.tar.gz -C ./xz --strip 1
+rm ./xz.tar.gz
+cd ./xz
+./configure --prefix=/usr/local --libdir=/usr/local/lib64
+make -j$(($(nproc)-1))
+make install
+make DESTDIR=/out install
+cd ..
+rm -rf ./xz
+read -p "Press any key to resume ..."
+
+fi
+
+if [ ! -z $build_all ] || [ ! -z $build_lz4 ]; then
+
+mkdir -p ./lz4
+curl -L https://github.com/lz4/lz4/archive/v1.9.2.tar.gz -o ./lz4.tar.gz
+tar zxf ./lz4.tar.gz -C ./lz4 --strip 1
+rm ./lz4.tar.gz
+cd ./lz4
+make -j$(($(nproc)-1))
+make PREFIX=/usr/local LIBDIR=/usr/local/lib64 install
+make PREFIX=/out/usr/local LIBDIR=/out/usr/local/lib64 install
+cd ..
+rm -rf ./lz4
+read -p "Press any key to resume ..."
+
+fi
+
+if [ ! -z $build_all ] || [ ! -z $build_gzip ]; then
+
+mkdir -p ./gzip
+curl https://ftp.gnu.org/gnu/gzip/gzip-1.10.tar.gz -o ./gzip.tar.gz
+tar zxf ./gzip.tar.gz -C ./gzip --strip 1
+rm ./gzip.tar.gz
+cd ./gzip
+./configure --prefix=/usr/local --libdir=/usr/local/lib64
+make -j$(($(nproc)-1))
+make install
+make DESTDIR=/out install
+cd ..
+rm -rf ./gzip
+read -p "Press any key to resume ..."
+
+fi
+
+if [ ! -z $build_all ] || [ ! -z $build_zip ]; then
+
+mkdir -p ./zip
+curl -L https://downloads.sourceforge.net/infozip/zip30.tar.gz -o ./zip.tar.gz
+tar zxf ./zip.tar.gz -C ./zip --strip 1
+rm ./zip.tar.gz
+cd ./zip
+make -f unix/Makefile generic_gcc
+make prefix=/usr/local -f unix/Makefile install
+make prefix=/out/usr/local -f unix/Makefile install
+cd ..
+rm -rf ./zip
+read -p "Press any key to resume ..."
+
+fi
+
+if [ ! -z $build_all ] || [ ! -z $build_unzip ]; then
+
+mkdir -p ./unzip
+curl -L https://downloads.sourceforge.net/infozip/unzip60.tar.gz -o ./unzip.tar.gz
+tar zxf ./unzip.tar.gz -C ./unzip --strip 1
+rm ./unzip.tar.gz
+cd ./unzip
+make -f unix/Makefile generic_gcc
+make prefix=/usr/local -f unix/Makefile install
+make prefix=/out/usr/local -f unix/Makefile install
+cd ..
+rm -rf ./unzip
+read -p "Press any key to resume ..."
+
+fi
+
+if [ ! -z $build_all ] || [ ! -z $build_zlib ]; then
+
+mkdir -p ./zlib
+curl -L http://prdownloads.sourceforge.net/libpng/zlib-1.2.11.tar.gz?download -o ./zlib.tar.gz
+tar zxf ./zlib.tar.gz -C ./zlib --strip 1
+rm ./zlib.tar.gz
+cd ./zlib
+./configure --prefix=/usr/local --libdir=/usr/local/lib64
+make -j$(($(nproc)-1))
+make install
+make DESTDIR=/out install
+cd ..
+rm -rf ./zlib
+read -p "Press any key to resume ..."
+
+fi
+
+if [ ! -z $build_all ] || [ ! -z $build_squashfs ]; then
+
+curl -L https://github.com/plougher/squashfs-tools/archive/master.tar.gz -o squashfs.tar.gz
+tar zxf ./squashfs.tar.gz squashfs-tools-master/squashfs-tools --strip 1
+rm ./squashfs.tar.gz
+cd squashfs-tools
+make
+cp mksquashfs /usr/local/bin/
+cp unsquashfs /usr/local/bin/
+cp mksquashfs /out/usr/local/bin/
+cp unsquashfs /out/usr/local/bin/
+cd ..
+rm -rf ./squashfs-tools
+read -p "Press any key to resume ..."
+
+fi
+
+if [ ! -z $build_all ] || [ ! -z $build_zstd ]; then
+
+mkdir -p ./zstd
+curl -L https://github.com/facebook/zstd/releases/download/v1.4.5/zstd-1.4.5.tar.gz -o ./zstd.tar.gz
+tar zxf ./zstd.tar.gz -C ./zstd --strip 1
+rm ./zstd.tar.gz
+cd ./zstd
+make -j$(($(nproc)-1))
+make PREFIX=/usr/local LIBDIR=/usr/local/lib64 install
+make PREFIX=/out/usr/local LIBDIR=/out/usr/local/lib64 install
+cd ..
+rm -rf ./zstd
+read -p "Press any key to resume ..."
+
+fi
+
+if [ ! -z $build_all ] || [ ! -z $build_libunistring ]; then
+
+mkdir -p ./libunistring
+curl https://ftp.gnu.org/gnu/libunistring/libunistring-0.9.10.tar.gz -o ./libunistring.tar.gz
+tar zxf ./libunistring.tar.gz -C ./libunistring --strip 1
+rm ./libunistring.tar.gz
+cd ./libunistring
+./configure --prefix=/usr/local --libdir=/usr/local/lib64
+make -j$(($(nproc)-1))
+make install
+make DESTDIR=/out install
+cd ..
+rm -rf ./libunistring
+read -p "Press any key to resume ..."
+
+fi
+
+if [ ! -z $build_all ] || [ ! -z $build_libexpat ]; then
+
+mkdir -p ./libexpat
+curl -L https://github.com/libexpat/libexpat/releases/download/R_2_2_9/expat-2.2.9.tar.gz -o ./libexpat.tar.gz
+tar zxf ./libexpat.tar.gz -C ./libexpat --strip 1
+rm ./libexpat.tar.gz
+cd ./libexpat
+./configure --prefix=/usr/local --libdir=/usr/local/lib64
+make -j$(($(nproc)-1))
+make install
+make DESTDIR=/out install
+cd ..
+rm -rf ./libexpat
+read -p "Press any key to resume ..."
+
+fi
+
+if [ ! -z $build_all ] || [ ! -z $build_libffi ]; then
+
+mkdir -p ./libffi
+curl -L https://github.com/libffi/libffi/releases/download/v3.3/libffi-3.3.tar.gz -o ./libffi.tar.gz
+tar zxf ./libffi.tar.gz -C ./libffi --strip 1
+rm ./libffi.tar.gz
+cd ./libffi
+./configure --prefix=/usr/local --libdir=/usr/local/lib64
+make -j$(($(nproc)-1))
+make install
+make DESTDIR=/out install
+cd ..
+rm -rf ./libffi
+read -p "Press any key to resume ..."
+
+fi
+
+if [ ! -z $build_all ] || [ ! -z $build_libidn2 ]; then
+
+mkdir -p ./libidn2
+curl https://ftp.gnu.org/gnu/libidn/libidn2-2.3.0.tar.gz -o ./libidn2.tar.gz
+tar zxf ./libidn2.tar.gz -C ./libidn2 --strip 1
+rm ./libidn2.tar.gz
+cd ./libidn2
+./configure --prefix=/usr/local --libdir=/usr/local/lib64
+make -j$(($(nproc)-1))
+make install
+make DESTDIR=/out install
+cd ..
+rm -rf ./libidn2
+read -p "Press any key to resume ..."
+
+fi
+
+if [ ! -z $build_all ] || [ ! -z $build_libpipeline ]; then
+
+mkdir -p ./libpipeline
+curl -L http://download.savannah.nongnu.org/releases/libpipeline/libpipeline-1.5.3.tar.gz -o ./libpipeline.tar.gz
+tar zxf ./libpipeline.tar.gz -C ./libpipeline --strip 1
+rm ./libpipeline.tar.gz
+cd ./libpipeline
+./configure --prefix=/usr/local --libdir=/usr/local/lib64 --sysconfdir=/usr/local/etc
+make -j$(($(nproc)-1))
+make install
+make DESTDIR=/out install
+cd ..
+rm -rf ./libpipeline
+read -p "Press any key to resume ..."
+
+fi
+
+if [ ! -z $build_all ] || [ ! -z $build_ncurses ]; then
+
+mkdir -p ./ncurses
+curl https://ftp.gnu.org/pub/gnu/ncurses/ncurses-6.2.tar.gz -o ./ncurses.tar.gz
+tar zxf ./ncurses.tar.gz -C ./ncurses --strip 1
+rm ./ncurses.tar.gz
+cd ./ncurses
+./configure --prefix=/usr/local --libdir=/usr/local/lib64 --with-shared --enable-pc-files
+make -j$(($(nproc)-1))
+make install
+make DESTDIR=/out install
+cd ..
+rm -rf ./ncurses
+read -p "Press any key to resume ..."
+
+fi
+
+if [ ! -z $build_all ] || [ ! -z $build_readline ]; then
+
+mkdir -p ./readline
+curl https://ftp.gnu.org/gnu/readline/readline-8.0.tar.gz -o ./readline.tar.gz
+tar zxf ./readline.tar.gz -C ./readline --strip 1
+rm ./readline.tar.gz
+cd ./readline
+./configure --prefix=/usr/local --libdir=/usr/local/lib64
+make SHLIB_LIBS="-lncurses" -j$(($(nproc)-1))
+make SHLIB_LIBS="-lncurses" install
+make SHLIB_LIBS="-lncurses" DESTDIR=/out install
+cd ..
+rm -rf ./readline
+read -p "Press any key to resume ..."
+
+fi
+
+if [ ! -z $build_all ] || [ ! -z $build_flex ]; then
+
+mkdir -p ./flex
+curl -L https://github.com/westes/flex/releases/download/v2.6.4/flex-2.6.4.tar.gz -o ./flex.tar.gz
+tar zxf ./flex.tar.gz -C ./flex --strip 1
+rm ./flex.tar.gz
+cd ./flex
+./configure --prefix=/usr/local --libdir=/usr/local/lib64
+make -j$(($(nproc)-1))
+make install
+make DESTDIR=/out install
+cd ..
+rm -rf ./flex
+read -p "Press any key to resume ..."
+
+fi
+
+if [ ! -z $build_all ] || [ ! -z $build_bison ]; then
+
+mkdir -p ./bison
+curl https://ftp.gnu.org/gnu/bison/bison-3.7.tar.gz -o ./bison.tar.gz
+tar zxf ./bison.tar.gz -C ./bison --strip 1
+rm ./bison.tar.gz
+cd ./bison
+./configure --prefix=/usr/local --libdir=/usr/local/lib64
+make -j$(($(nproc)-1))
+make install
+make DESTDIR=/out install
+cd ..
+rm -rf ./bison
+read -p "Press any key to resume ..."
+
+fi
+
+if [ ! -z $build_all ] || [ ! -z $build_gettext ]; then
+
+mkdir -p ./gettext
+curl https://ftp.gnu.org/pub/gnu/gettext/gettext-0.21.tar.gz -o ./gettext.tar.gz
+tar zxf ./gettext.tar.gz -C ./gettext --strip 1
+rm ./gettext.tar.gz
+cd ./gettext
+./configure --prefix=/usr/local --libdir=/usr/local/lib64
+make -j$(($(nproc)-1))
+make install
+make DESTDIR=/out install
+cd ..
+rm -rf ./gettext
+read -p "Press any key to resume ..."
+
+fi
+
+if [ ! -z $build_all ] || [ ! -z $build_python ]; then
+
+mkdir -p ./python
+curl https://www.python.org/ftp/python/3.8.5/Python-3.8.5.tgz -o ./python.tar.gz
+tar zxf ./python.tar.gz -C ./python --strip 1
+rm ./python.tar.gz
+cd ./python
+LDFLAGS="-lz" CFLAGS="-I/usr/local/include/ncurses" ./configure --prefix=/usr/local --libdir=/usr/local/lib64 --enable-shared --with-system-expat --with-system-ffi --with-ensurepip=yes
+make -j$(($(nproc)-1))
+make DESTDIR=/out install
+ln -s /usr/local/lib64/python3.8/lib-dynload /out/usr/local/lib/python3.8/lib-dynload
+make install
+ln -s /usr/local/lib64/python3.8/lib-dynload /usr/local/lib/python3.8/lib-dynload
+cd ..
+rm -rf ./python
+read -p "Press any key to resume ..."
+
+fi
+
+if [ ! -z $build_all ] || [ ! -z $build_files ]; then
+
+mkdir -p ./files
+curl -L https://github.com/file/file/archive/FILE5_39.tar.gz -o ./files.tar.gz
+tar zxf ./files.tar.gz -C ./files --strip 1
+rm ./files.tar.gz
+cd ./files
+autoreconf --install
+./configure --prefix=/usr/local --libdir=/usr/local/lib64 --disable-libseccomp
+make -j$(($(nproc)-1))
+make install
+make DESTDIR=/out install
+cd ..
+rm -rf ./files
+read -p "Press any key to resume ..."
+
+fi
+
+if [ ! -z $build_all ] || [ ! -z $build_pkg_config ]; then
+
+mkdir -p ./pkg-config
+curl https://pkg-config.freedesktop.org/releases/pkg-config-0.29.2.tar.gz -o ./pkg-config.tar.gz
+tar zxf ./pkg-config.tar.gz -C ./pkg-config --strip 1
+rm ./pkg-config.tar.gz
+cd ./pkg-config
+./configure --prefix=/usr/local --with-internal-glib
+make -j$(($(nproc)-1))
+make install
+make DESTDIR=/out install
+cd ..
+rm -rf ./pkg-config
+read -p "Press any key to resume ..."
+
+fi
+
+if [ ! -z $build_all ] || [ ! -z $build_db ]; then
+
+mkdir -p ./db
+curl -L http://anduin.linuxfromscratch.org/BLFS/bdb/db-5.3.28.tar.gz -o ./db.tar.gz
+tar xf ./db.tar.gz -C ./db --strip 1
+rm ./db.tar.gz
+cd ./db/build_unix
+../dist/configure --prefix=/usr/local --libdir=/usr/local/lib64 --sysconfdir=/usr/local/etc --enable-compat185 --enable-dbm --disable-static
+make -j$(($(nproc)-1))
+make install
+make DESTDIR=/out install
+cd ../..
+rm -rf ./db
+read -p "Press any key to resume ..."
+
+fi
+
+if [ ! -z $build_all ] || [ ! -z $build_texinfo ]; then
+
+mkdir -p ./texinfo
+curl https://ftp.gnu.org/gnu/texinfo/texinfo-6.7.tar.gz -o ./texinfo.tar.gz
+tar zxf ./texinfo.tar.gz -C ./texinfo --strip 1
+rm ./texinfo.tar.gz
+cd ./texinfo
+./configure --prefix=/usr/local --libdir=/usr/local/lib64
+make -j$(($(nproc)-1))
+make install
+make DESTDIR=/out install
+cd ..
+rm -rf ./texinfo
+read -p "Press any key to resume ..."
+
+fi
+
+if [ ! -z $build_all ] || [ ! -z $build_groff ]; then
+
+mkdir -p ./groff
+curl https://ftp.gnu.org/gnu/groff/groff-1.22.4.tar.gz -o ./groff.tar.gz
+tar zxf ./groff.tar.gz -C ./groff --strip 1
+rm ./groff.tar.gz
+cd ./groff
+./configure --prefix=/usr/local --libdir=/usr/local/lib64
+make -j$(($(nproc)-1))
+make install
+make DESTDIR=/out install
+cd ..
+rm -rf ./groff
+read -p "Press any key to resume ..."
+
+fi
+
+if [ ! -z $build_all ] || [ ! -z $build_man_db ]; then
+
+mkdir -p ./man-db
+curl -L http://download.savannah.nongnu.org/releases/man-db/man-db-2.9.3.tar.xz -o ./man-db.tar.xz
+tar xf ./man-db.tar.xz -C ./man-db --strip 1
+rm ./man-db.tar.xz
+cd ./man-db
+./configure --prefix=/usr/local --libdir=/usr/local/lib64 --sysconfdir=/usr/local/etc --with-systemdsystemunitdir=/usr/local/lib --with-systemdtmpfilesdir=/usr/local/lib --with-db=db --disable-setuid
+make -j$(($(nproc)-1))
+make install
+make DESTDIR=/out install
+cd ..
+rm -rf ./man-db
+read -p "Press any key to resume ..."
+
+fi
+
+if [ ! -z $build_all ] || [ ! -z $build_libcap ]; then
+
+mkdir -p ./libcap
+curl -L https://mirrors.edge.kernel.org/pub/linux/libs/security/linux-privs/libcap2/libcap-2.44.tar.gz -o libcap.tar.gz
+tar zxf libcap.tar.gz -C ./libcap --strip 1
+rm ./libcap.tar.gz
+cd ./libcap
+make -j$(($(nproc)-1))
+make prefix=/usr/local lib=lib64 install
+make DESTDIR=/out prefix=/usr/local lib=lib64 install
+cd ..
+rm -rf ./libcap
+read -p "Press any key to resume ..."
+
+fi
+
+if [ ! -z $build_all ] || [ ! -z $build_libgmp ]; then
+
+mkdir -p ./libgmp
+curl -L https://gmplib.org/download/gmp/gmp-6.2.0.tar.xz -o ./libgmp.tar.xz
+tar xf ./libgmp.tar.xz -C ./libgmp --strip 1
+rm ./libgmp.tar.xz
+cd libgmp
+./configure --prefix=/usr/local --libdir=/usr/local/lib64 --build=x86_64-unknown-linux-gnu
+make -j$(($(nproc)-1))
+make install
+make DESTDIR=/out install
+cd ..
+rm -rf ./libgmp
+read -p "Press any key to resume ..."
+
+fi
+
+if [ ! -z $build_all ] || [ ! -z $build_nettle ]; then
+
+mkdir -p ./nettle
+curl -L ftp://ftp.gnu.org/gnu/nettle/nettle-3.6.tar.gz -o ./nettle.tar.gz
+tar zxf ./nettle.tar.gz -C ./nettle --strip 1
+rm ./nettle.tar.gz
+cd ./nettle
+./configure --prefix=/usr/local --libdir=/usr/local/lib64 --sysconfdir=/usr/local/etc
+make -j$(($(nproc)-1))
+make install
+make DESTDIR=/out install
+cd ..
+rm -rf ./nettle
+read -p "Press any key to resume ..."
+
+fi
+
+if [ ! -z $build_all ] || [ ! -z $build_gnutls ]; then
+
+mkdir -p ./gnutls
+curl -L https://www.gnupg.org/ftp/gcrypt/gnutls/v3.6/gnutls-3.6.15.tar.xz -o ./gnutls.tar.xz
+tar xf ./gnutls.tar.xz -C ./gnutls --strip 1
+rm ./gnutls.tar.xz
+cd ./gnutls
+./configure --prefix=/usr/local --libdir=/usr/local/lib64 --sysconfdir=/usr/local/etc --with-included-libtasn1 --without-p11-kit
+make -j$(($(nproc)-1))
+make install
+make DESTDIR=/out install
+cd ..
+rm -rf ./gnutls
+read -p "Press any key to resume ..."
+
+fi
+
+if [ ! -z $build_all ] || [ ! -z $build_npth ]; then
+
+mkdir -p ./npth
+curl -L https://gnupg.org/ftp/gcrypt/npth/npth-1.6.tar.bz2 -o ./npth.tar.bz2
+tar jxf ./npth.tar.bz2 -C ./npth --strip 1
+rm ./npth.tar.bz2
+cd ./npth
+./configure --prefix=/usr/local --libdir=/usr/local/lib64 --sysconfdir=/usr/local/etc
+make -j$(($(nproc)-1))
+make install
+make DESTDIR=/out install
+cd ..
+rm -rf ./npth
+read -p "Press any key to resume ..."
+
+fi
+
+if [ ! -z $build_all ] || [ ! -z $build_libgpg_error ]; then
+
+mkdir -p ./libgpg-error
+curl -L https://gnupg.org/ftp/gcrypt/libgpg-error/libgpg-error-1.39.tar.bz2 -o ./libgpg-error.tar.bz2
+tar jxf ./libgpg-error.tar.bz2 -C ./libgpg-error --strip 1
+rm ./libgpg-error.tar.bz2
+cd ./libgpg-error
+./configure --prefix=/usr/local --libdir=/usr/local/lib64 --sysconfdir=/usr/local/etc
+make -j$(($(nproc)-1))
+make install
+make DESTDIR=/out install
+cd ..
+rm -rf ./libgpg-error
+read -p "Press any key to resume ..."
+
+fi
+
+if [ ! -z $build_all ] || [ ! -z $build_libgcrypt ]; then
+
+mkdir -p ./libgcrypt
+curl -L https://gnupg.org/ftp/gcrypt/libgcrypt/libgcrypt-1.8.6.tar.bz2 -o ./libgcrypt.tar.bz2
+tar jxf ./libgcrypt.tar.bz2 -C ./libgcrypt --strip 1
+rm ./libgcrypt.tar.bz2
+cd ./libgcrypt
+./configure --prefix=/usr/local --libdir=/usr/local/lib64 --sysconfdir=/usr/local/etc
+make -j$(($(nproc)-1))
+make install
+make DESTDIR=/out install
+cd ..
+rm -rf ./libgcrypt
+read -p "Press any key to resume ..."
+
+fi
+
+if [ ! -z $build_all ] || [ ! -z $build_libksba ]; then
+
+mkdir -p ./libksba
+curl -L https://gnupg.org/ftp/gcrypt/libksba/libksba-1.4.0.tar.bz2 -o ./libksba.tar.bz2
+tar jxf ./libksba.tar.bz2 -C ./libksba --strip 1
+rm ./libksba.tar.bz2
+cd ./libksba
+./configure --prefix=/usr/local --libdir=/usr/local/lib64 --sysconfdir=/usr/local/etc
+make -j$(($(nproc)-1))
+make install
+make DESTDIR=/out install
+cd ..
+rm -rf ./libksba
+read -p "Press any key to resume ..."
+
+fi
+
+if [ ! -z $build_all ] || [ ! -z $build_libassuan ]; then
+
+mkdir -p ./libassuan
+curl -L https://gnupg.org/ftp/gcrypt/libassuan/libassuan-2.5.3.tar.bz2 -o ./libassuan.tar.bz2
+tar jxf ./libassuan.tar.bz2 -C ./libassuan --strip 1
+rm ./libassuan.tar.bz2
+cd ./libassuan
+./configure --prefix=/usr/local --libdir=/usr/local/lib64 --sysconfdir=/usr/local/etc
+make -j$(($(nproc)-1))
+make install
+make DESTDIR=/out install
+cd ..
+rm -rf ./libassuan
+read -p "Press any key to resume ..."
+
+fi
+
+if [ ! -z $build_all ] || [ ! -z $build_pinentry ]; then
+
+mkdir -p ./pinentry
+curl -L https://gnupg.org/ftp/gcrypt/pinentry/pinentry-1.1.0.tar.bz2 -o ./pinentry.tar.bz2
+tar jxf ./pinentry.tar.bz2 -C ./pinentry --strip 1
+rm ./pinentry.tar.bz2
+cd ./pinentry
+./configure --prefix=/usr/local --libdir=/usr/local/lib64 --sysconfdir=/usr/local/etc
+make -j$(($(nproc)-1))
+make install
+make DESTDIR=/out install
+cd ..
+rm -rf ./pinentry
+read -p "Press any key to resume ..."
+
+fi
+
+if [ ! -z $build_all ] || [ ! -z $build_gnupg ]; then
+
+mkdir -p ./gnupg
+curl -L https://gnupg.org/ftp/gcrypt/gnupg/gnupg-2.2.23.tar.bz2 -o ./gnupg.tar.bz2
+tar jxf ./gnupg.tar.bz2 -C ./gnupg --strip 1
+rm ./gnupg.tar.bz2
+cd ./gnupg
+./configure --prefix=/usr/local --libdir=/usr/local/lib64 --sysconfdir=/usr/local/etc
+make -j$(($(nproc)-1))
+make install
+make DESTDIR=/out install
+cd ..
+rm -rf ./gnupg
+read -p "Press any key to resume ..."
+
+fi
+
+if [ ! -z $build_all ] || [ ! -z $build_wget ]; then
+
+mkdir -p ./wget
+curl -L https://ftp.gnu.org/gnu/wget/wget-1.20.3.tar.gz -o ./wget.tar.gz
+tar zxf ./wget.tar.gz -C ./wget --strip 1
+rm ./wget.tar.gz
+cd ./wget
+./configure --prefix=/usr/local --libdir=/usr/local/lib64 --sysconfdir=/usr/local/etc
+make -j$(($(nproc)-1))
+make install
+make DESTDIR=/out install
+cd ..
+rm -rf ./wget
+read -p "Press any key to resume ..."
+
+fi
+
+if [ ! -z $build_all ] || [ ! -z $build_curl ]; then
+
+mkdir -p ./curl
+curl -L https://github.com/curl/curl/releases/download/curl-7_72_0/curl-7.72.0.tar.gz -o ./curl.tar.gz
+tar zxf ./curl.tar.gz -C ./curl --strip 1
+rm ./curl.tar.gz
+cd ./curl
+./configure --prefix=/usr/local --libdir=/usr/local/lib64
+make -j$(($(nproc)-1))
+make install
+make DESTDIR=/out install
+cd ..
+rm -rf ./curl
+read -p "Press any key to resume ..."
+
+fi
+
+if [ ! -z $build_all ] || [ ! -z $build_git ]; then
+
+mkdir -p ./git
+curl https://mirrors.edge.kernel.org/pub/software/scm/git/git-2.28.0.tar.gz -o ./git.tar.gz
+tar zxf ./git.tar.gz -C ./git --strip 1
+rm ./git.tar.gz
+cd ./git
+./configure --prefix=/usr/local --libdir=/usr/local/lib64
+make -j$(($(nproc)-1))
+make install
+make DESTDIR=/out install
+cd ..
+rm -rf ./git
+read -p "Press any key to resume ..."
+
+fi
+
+if [ ! -z $build_all ] || [ ! -z $build_lxc ]; then
+
+mkdir -p ./lxc
+curl -L https://github.com/lxc/lxc/archive/lxc-4.0.4.tar.gz -o ./lxc.tar.gz
+tar zxf ./lxc.tar.gz -C ./lxc --strip 1
+rm ./lxc.tar.gz
+cd ./lxc
+patch -p1 << EOF
+--- a/src/lxc/cgroups/cgfsng.c	2020-08-04 21:18:57.000000000 +0000
++++ b/src/lxc/cgroups/cgfsng.c	2020-10-18 17:45:55.585126502 +0000
+@@ -349,7 +349,7 @@
+ 	ssize_t maxisol = 0, maxoffline = 0, maxposs = 0;
+ 	bool flipped_bit = false;
+ 
+-	fpath = must_make_path(parent_cgroup, "cpuset.cpus", NULL);
++	fpath = must_make_path(parent_cgroup, "cpus", NULL);
+ 	posscpus = read_file(fpath);
+ 	if (!posscpus)
+ 		return log_error_errno(false, errno, "Failed to read file \"%s\"", fpath);
+@@ -440,10 +440,10 @@
+ 
+ copy_parent:
+ 	if (!am_initialized) {
+-		ret = lxc_write_openat(child_cgroup, "cpuset.cpus", cpulist, strlen(cpulist));
++		ret = lxc_write_openat(child_cgroup, "cpus", cpulist, strlen(cpulist));
+ 		if (ret < 0)
+ 			return log_error_errno(false,
+-					       errno, "Failed to write cpu list to \"%s/cpuset.cpus\"",
++					       errno, "Failed to write cpu list to \"%s/cpus\"",
+ 					       child_cgroup);
+ 
+ 		TRACE("Copied cpu settings of parent cgroup");
+@@ -552,8 +552,8 @@
+ 		TRACE("\"cgroup.clone_children\" was already set to \"1\"");
+ 
+ 	/* copy parent's settings */
+-	if (!copy_parent_file(parent_cgroup, child_cgroup, "cpuset.mems"))
+-		return log_error_errno(-1, errno, "Failed to copy \"cpuset.mems\" settings");
++	if (!copy_parent_file(parent_cgroup, child_cgroup, "mems"))
++		return log_error_errno(-1, errno, "Failed to copy \"mems\" settings");
+ 
+ 	/* Set clone_children so children inherit our settings */
+ 	ret = lxc_writeat(cgroup_fd, "cgroup.clone_children", "1", 1);
+EOF
+./autogen.sh
+./configure --prefix=/usr/local --libdir=/usr/local/lib64 --disable-selinux --with-init-script=none
+make -j$(($(nproc)-1))
+make install
+make DESTDIR=/out install
+rm -r /usr/local/var/lib/lxc
+ln -s /home/root/brioche /usr/local/var/lib/lxc
+rm -r /out/usr/local/var/lib/lxc
+ln -s /home/root/brioche /out/usr/local/var/lib/lxc
+cd ..
+rm -rf ./lxc
+read -p "Press any key to resume ..."
+
+fi
+
+if [ ! -z $build_all ] || [ ! -z $build_libxml2 ]; then
+
+mkdir -p ./libxml2
+curl ftp://xmlsoft.org/libxslt/libxml2-2.9.9.tar.gz -o ./libxml2.tar.gz
+tar zxf ./libxml2.tar.gz -C ./libxml2 --strip 1
+rm ./libxml2.tar.gz
+cd ./libxml2
+./configure --prefix=/usr/local --libdir=/usr/local/lib64 --with-python=/usr/bin/python3
+make -j$(($(nproc)-1))
+make install
+make DESTDIR=/out install
+cd ..
+rm -rf ./libxml2
+read -p "Press any key to resume ..."
+
+fi
+
+if [ ! -z $build_all ] || [ ! -z $build_sgml ]; then
+
+mkdir -p ./sgml
+curl -L https://sourceware.org/ftp/docbook-tools/new-trials/SOURCES/sgml-common-0.6.3.tgz -o ./sgml.tar.gz
+tar zxf ./sgml.tar.gz -C ./sgml --strip 1
+rm ./sgml.tar.gz
+cd ./sgml
+curl -L http://www.linuxfromscratch.org/patches/blfs/svn/sgml-common-0.6.3-manpage-1.patch -o sgml.patch
+patch -p1 < sgml.patch
+autoreconf -f -i
+./configure --prefix=/usr/local --libdir=/usr/local/lib64 --sysconfdir=/usr/local/etc
+make -j$(($(nproc)-1))
+make install
+make DESTDIR=/out install
+sed -i "s#/etc/#/usr/local/etc/#g" /usr/local/bin/install-catalog
+cat >/usr/local/etc/sgml/sgml.conf <<SGMLCONF
+# /etc/sgml/sgml.conf conformant with LSB
+SGML_BASE_DIR=/usr/local/share/sgml
+SGML_CATALOGS_DIR=/usr/local/etc/sgml
+SGMLCONF
+cp /usr/local/bin/install-catalog /out/usr/local/bin/install-catalog
+cp /usr/local/etc/sgml/sgml.conf /out/usr/local/etc/sgml/sgml.conf
+install-catalog --add /usr/local/etc/sgml/sgml-ent.cat /usr/local/share/sgml/sgml-iso-entities-8879.1986/catalog
+install-catalog --add /usr/local/etc/sgml/sgml-docbook.cat /usr/local/etc/sgml/sgml-ent.cat
+cd ..
+rm -rf ./sgml
+read -p "Press any key to resume ..."
+
+fi
+
+if [ ! -z $build_all ] || [ ! -z $build_docbook ]; then
+
+mkdir -p ./docbook-xml
+curl -L http://www.docbook.org/xml/4.5/docbook-xml-4.5.zip -o ./docbook-xml.zip
+cd ./docbook-xml
+unzip ../docbook-xml.zip
+rm ../docbook-xml.zip
+mkdir -p /usr/local/etc/xml
+mkdir -p /usr/local/share/xml/docbook/xml-dtd-4.5
+cp -af docbook.cat *.dtd ent/ *.mod /usr/local/share/xml/docbook/xml-dtd-4.5
+xmlcatalog --noout --create /usr/local/etc/xml/docbook
+xmlcatalog --noout --add "public" "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd" /usr/local/etc/xml/docbook
+xmlcatalog --noout --add "public" "-//OASIS//DTD DocBook XML CALS Table Model V4.5//EN" "file:///usr/local/share/xml/docbook/xml-dtd-4.5/calstblx.dtd" /usr/local/etc/xml/docbook
+xmlcatalog --noout --add "public" "-//OASIS//DTD XML Exchange Table Model 19990315//EN" "file:///usr/local/share/xml/docbook/xml-dtd-4.5/soextblx.dtd" /usr/local/etc/xml/docbook
+xmlcatalog --noout --add "public" "-//OASIS//ELEMENTS DocBook XML Information Pool V4.5//EN" "file:///usr/local/share/xml/docbook/xml-dtd-4.5/dbpoolx.mod" /usr/local/etc/xml/docbook
+xmlcatalog --noout --add "public" "-//OASIS//ELEMENTS DocBook XML Document Hierarchy V4.5//EN" "file:///usr/local/share/xml/docbook/xml-dtd-4.5/dbhierx.mod" /usr/local/etc/xml/docbook
+xmlcatalog --noout --add "public" "-//OASIS//ELEMENTS DocBook XML HTML Tables V4.5//EN" "file:///usr/local/share/xml/docbook/xml-dtd-4.5/htmltblx.mod" /usr/local/etc/xml/docbook
+xmlcatalog --noout --add "public" "-//OASIS//ENTITIES DocBook XML Notations V4.5//EN" "file:///usr/local/share/xml/docbook/xml-dtd-4.5/dbnotnx.mod" /usr/local/etc/xml/docbook
+xmlcatalog --noout --add "public" "-//OASIS//ENTITIES DocBook XML Character Entities V4.5//EN" "file:///usr/local/share/xml/docbook/xml-dtd-4.5/dbcentx.mod" /usr/local/etc/xml/docbook
+xmlcatalog --noout --add "public" "-//OASIS//ENTITIES DocBook XML Additional General Entities V4.5//EN" "file:///usr/local/share/xml/docbook/xml-dtd-4.5/dbgenent.mod" /usr/local/etc/xml/docbook
+xmlcatalog --noout --add "rewriteSystem" "http://www.oasis-open.org/docbook/xml/4.5" "file:///usr/local/share/xml/docbook/xml-dtd-4.5" /usr/local/etc/xml/docbook
+xmlcatalog --noout --add "rewriteURI" "http://www.oasis-open.org/docbook/xml/4.5" "file:///usr/local/share/xml/docbook/xml-dtd-4.5" /usr/local/etc/xml/docbook
+xmlcatalog --noout --create /usr/local/etc/xml/catalog
+xmlcatalog --noout --add "delegatePublic" "-//OASIS//ENTITIES DocBook XML" "file:///usr/local/etc/xml/docbook" /usr/local/etc/xml/catalog
+xmlcatalog --noout --add "delegatePublic" "-//OASIS//DTD DocBook XML" "file:///usr/local/etc/xml/docbook" /usr/local/etc/xml/catalog
+xmlcatalog --noout --add "delegateSystem" "http://www.oasis-open.org/docbook/" "file:///usr/local/etc/xml/docbook" /usr/local/etc/xml/catalog
+xmlcatalog --noout --add "delegateURI" "http://www.oasis-open.org/docbook/" "file:///usr/local/etc/xml/docbook" /usr/local/etc/xml/catalog
+for DTDVERSION in 4.1.2 4.2 4.3 4.4
+do
+  xmlcatalog --noout --add "public" "-//OASIS//DTD DocBook XML V$DTDVERSION//EN" "http://www.oasis-open.org/docbook/xml/$DTDVERSION/docbookx.dtd" /usr/local/etc/xml/docbook
+  xmlcatalog --noout --add "rewriteSystem" "http://www.oasis-open.org/docbook/xml/$DTDVERSION" "file:///usr/local/share/xml/docbook/xml-dtd-4.5" /usr/local/etc/xml/docbook
+  xmlcatalog --noout --add "rewriteURI" "http://www.oasis-open.org/docbook/xml/$DTDVERSION" "file:///usr/local/share/xml/docbook/xml-dtd-4.5" /usr/local/etc/xml/docbook
+  xmlcatalog --noout --add "delegateSystem" "http://www.oasis-open.org/docbook/xml/$DTDVERSION/" "file:///usr/local/etc/xml/docbook" /usr/local/etc/xml/catalog
+  xmlcatalog --noout --add "delegateURI" "http://www.oasis-open.org/docbook/xml/$DTDVERSION/" "file:///usr/local/etc/xml/docbook" /usr/local/etc/xml/catalog
+done
+cd ..
+rm -rf ./docbook-xml
+mkdir -p ./docbook-xml
+curl -L https://docbook.org/xml/5.0/docbook-5.0.zip -o ./docbook-xml.zip
+cd ./docbook-xml
+unzip ../docbook-xml.zip
+rm ../docbook-xml.zip
+mkdir -p /usr/local/share/xml/docbook/schema/{dtd,rng,sch,xsd}/5.0
+cp -r docbook-5.0/dtd/* /usr/local/share/xml/docbook/schema/dtd/5.0
+cp -r docbook-5.0/rng/* /usr/local/share/xml/docbook/schema/rng/5.0
+cp -r docbook-5.0/sch/* /usr/local/share/xml/docbook/schema/sch/5.0
+cp -r docbook-5.0/xsd/* /usr/local/share/xml/docbook/schema/xsd/5.0
+xmlcatalog --noout --create /usr/local/etc/xml/docbook-5.0
+xmlcatalog --noout --add "public" "-//OASIS//DTD DocBook XML 5.0//EN" "file:///usr/local/share/xml/docbook/schema/dtd/5.0/docbook.dtd" /usr/local/etc/xml/docbook-5.0
+xmlcatalog --noout --add "system" "http://www.oasis-open.org/docbook/xml/5.0/dtd/docbook.dtd" "file:///usr/local/share/xml/docbook/schema/dtd/5.0/docbook.dtd" /usr/local/etc/xml/docbook-5.0
+xmlcatalog --noout --add "system" "http://docbook.org/xml/5.0/dtd/docbook.dtd" "file:///usr/local/share/xml/docbook/schema/dtd/5.0/docbook.dtd" /usr/local/etc/xml/docbook-5.0
+xmlcatalog --noout --add "uri" "http://www.oasis-open.org/docbook/xml/5.0/rng/docbook.rng" "file:///usr/local/share/xml/docbook/schema/rng/5.0/docbook.rng" /usr/local/etc/xml/docbook-5.0
+xmlcatalog --noout --add "uri" "http://docbook.org/xml/5.0/rng/docbook.rng" "file:///usr/local/share/xml/docbook/schema/rng/5.0/docbook.rng" /usr/local/etc/xml/docbook-5.0
+xmlcatalog --noout --add "uri" "http://www.oasis-open.org/docbook/xml/5.0/rng/docbookxi.rng" "file:///usr/local/share/xml/docbook/schema/rng/5.0/docbookxi.rng" /usr/local/etc/xml/docbook-5.0
+xmlcatalog --noout --add "uri" "http://docbook.org/xml/5.0/rng/docbookxi.rng" "file:///usr/local/share/xml/docbook/schema/rng/5.0/docbookxi.rng" /usr/local/etc/xml/docbook-5.0
+xmlcatalog --noout --add "uri" "http://www.oasis-open.org/docbook/xml/5.0/rnc/docbook.rnc" "file:///usr/local/share/xml/docbook/schema/rng/5.0/docbook.rnc" /usr/local/etc/xml/docbook-5.0
+xmlcatalog --noout --add "uri" "http://docbook.org/xml/5.0/rng/docbook.rnc" "file:///usr/local/share/xml/docbook/schema/rng/5.0/docbook.rnc" /usr/local/etc/xml/docbook-5.0
+xmlcatalog --noout --add "uri" "http://www.oasis-open.org/docbook/xml/5.0/rnc/docbookxi.rnc" "file:///usr/local/share/xml/docbook/schema/rng/5.0/docbookxi.rnc" /usr/local/etc/xml/docbook-5.0
+xmlcatalog --noout --add "uri" "http://docbook.org/xml/5.0/rng/docbookxi.rnc" "file:///usr/local/share/xml/docbook/schema/rng/5.0/docbookxi.rnc" /usr/local/etc/xml/docbook-5.0
+xmlcatalog --noout --add "uri" "http://www.oasis-open.org/docbook/xml/5.0/xsd/docbook.xsd" "file:///usr/local/share/xml/docbook/schema/xsd/5.0/docbook.xsd" /usr/local/etc/xml/docbook-5.0
+xmlcatalog --noout --add "uri" "http://docbook.org/xml/5.0/xsd/docbook.xsd" "file:///usr/local/share/xml/docbook/schema/xsd/5.0/docbook.xsd" /usr/local/etc/xml/docbook-5.0
+xmlcatalog --noout --add "uri" "http://www.oasis-open.org/docbook/xml/5.0/xsd/docbookxi.xsd" "file:///usr/local/share/xml/docbook/schema/xsd/5.0/docbookxi.xsd" /usr/local/etc/xml/docbook-5.0
+xmlcatalog --noout --add "uri" "http://docbook.org/xml/5.0/xsd/docbookxi.xsd" "file:///usr/local/share/xml/docbook/schema/xsd/5.0/docbookxi.xsd" /usr/local/etc/xml/docbook-5.0
+xmlcatalog --noout --add "uri" "http://www.oasis-open.org/docbook/xml/5.0/xsd/xi.xsd" "file:///usr/local/share/xml/docbook/schema/xsd/5.0/xi.xsd" /usr/local/etc/xml/docbook-5.0
+xmlcatalog --noout --add "uri" "http://docbook.org/xml/5.0/xsd/xi.xsd" "file:///usr/local/share/xml/docbook/schema/xsd/5.0/xi.xsd" /usr/local/etc/xml/docbook-5.0
+xmlcatalog --noout --add "uri" "http://www.oasis-open.org/docbook/xml/5.0/xsd/xlink.xsd" "file:///usr/local/share/xml/docbook/schema/xsd/5.0/xlink.xsd" /usr/local/etc/xml/docbook-5.0
+xmlcatalog --noout --add "uri" "http://docbook.org/xml/5.0/xsd/xlink.xsd" "file:///usr/local/share/xml/docbook/schema/xsd/5.0/xlink.xsd" /usr/local/etc/xml/docbook-5.0
+xmlcatalog --noout --add "uri" "http://www.oasis-open.org/docbook/xml/5.0/xsd/xml.xsd" "file:///usr/local/share/xml/docbook/schema/xsd/5.0/xml.xsd" /usr/local/etc/xml/docbook-5.0
+xmlcatalog --noout --add "uri" "http://docbook.org/xml/5.0/xsd/xml.xsd" "file:///usr/local/share/xml/docbook/schema/xsd/5.0/xml.xsd" /usr/local/etc/xml/docbook-5.0
+xmlcatalog --noout --add "uri" "http://www.oasis-open.org/docbook/xml/5.0/sch/docbook.sch" "file:///usr/local/share/xml/docbook/schema/sch/5.0/docbook.sch" /usr/local/etc/xml/docbook-5.0
+xmlcatalog --noout --add "uri" "http://docbook.org/xml/5.0/sch/docbook.sch" "file:///usr/local/share/xml/docbook/schema/sch/5.0/docbook.sch" /usr/local/etc/xml/docbook-5.0
+xmlcatalog --noout --create /usr/local/share/xml/docbook/schema/dtd/5.0/catalog.xml
+xmlcatalog --noout --add "public" "-//OASIS//DTD DocBook XML 5.0//EN" "docbook.dtd" /usr/local/share/xml/docbook/schema/dtd/5.0/catalog.xml
+xmlcatalog --noout --add "system" "http://www.oasis-open.org/docbook/xml/5.0/dtd/docbook.dtd" "docbook.dtd" /usr/local/share/xml/docbook/schema/dtd/5.0/catalog.xml
+xmlcatalog --noout --create /usr/local/share/xml/docbook/schema/rng/5.0/catalog.xml
+xmlcatalog --noout --add "uri" "http://docbook.org/xml/5.0/rng/docbook.rng" "docbook.rng" /usr/local/share/xml/docbook/schema/rng/5.0/catalog.xml
+xmlcatalog --noout --add "uri" "http://www.oasis-open.org/docbook/xml/5.0/rng/docbook.rng" "docbook.rng" /usr/local/share/xml/docbook/schema/rng/5.0/catalog.xml
+xmlcatalog --noout --add "uri" "http://docbook.org/xml/5.0/rng/docbookxi.rng" "docbookxi.rng" /usr/local/share/xml/docbook/schema/rng/5.0/catalog.xml
+xmlcatalog --noout --add "uri" "http://www.oasis-open.org/docbook/xml/5.0/rng/docbookxi.rng" "docbookxi.rng" /usr/local/share/xml/docbook/schema/rng/5.0/catalog.xml
+xmlcatalog --noout --add "uri" "http://docbook.org/xml/5.0/rng/docbook.rnc" "docbook.rnc" /usr/local/share/xml/docbook/schema/rng/5.0/catalog.xml
+xmlcatalog --noout --add "uri" "http://www.oasis-open.org/docbook/xml/5.0/rng/docbook.rnc" "docbook.rnc" /usr/local/share/xml/docbook/schema/rng/5.0/catalog.xml
+xmlcatalog --noout --add "uri" "http://docbook.org/xml/5.0/rng/docbookxi.rnc" "docbookxi.rnc" /usr/local/share/xml/docbook/schema/rng/5.0/catalog.xml
+xmlcatalog --noout --add "uri" "http://www.oasis-open.org/docbook/xml/5.0/rng/docbookxi.rnc" "docbookxi.rnc" /usr/local/share/xml/docbook/schema/rng/5.0/catalog.xml
+xmlcatalog --noout --create /usr/local/share/xml/docbook/schema/sch/5.0/catalog.xml
+xmlcatalog --noout --add "uri" "http://docbook.org/xml/5.0/sch/docbook.sch" "docbook.sch" /usr/local/share/xml/docbook/schema/sch/5.0/catalog.xml
+xmlcatalog --noout --add "uri" "http://www.oasis-open.org/docbook/xml/5.0/sch/docbook.sch" "docbook.sch" /usr/local/share/xml/docbook/schema/sch/5.0/catalog.xml
+xmlcatalog --noout --create /usr/local/share/xml/docbook/schema/xsd/5.0/catalog.xml
+xmlcatalog --noout --add "uri" "http://docbook.org/xml/5.0/xsd/docbook.xsd" "docbook.xsd" /usr/local/share/xml/docbook/schema/xsd/5.0/catalog.xml
+xmlcatalog --noout --add "uri" "http://www.oasis-open.org/docbook/xml/5.0/xsd/docbook.xsd" "docbook.xsd" /usr/local/share/xml/docbook/schema/xsd/5.0/catalog.xml
+xmlcatalog --noout --add "uri" "http://docbook.org/xml/5.0/xsd/docbookxi.xsd" "docbookxi.xsd" /usr/local/share/xml/docbook/schema/xsd/5.0/catalog.xml
+xmlcatalog --noout --add "uri" "http://www.oasis-open.org/docbook/xml/5.0/xsd/docbookxi.xsd" "docbookxi.xsd" /usr/local/share/xml/docbook/schema/xsd/5.0/catalog.xml
+xmlcatalog --noout --add "uri" "http://docbook.org/xml/5.0/xsd/xlink.xsd" "xlink.xsd" /usr/local/share/xml/docbook/schema/xsd/5.0/catalog.xml
+xmlcatalog --noout --add "uri" "http://www.oasis-open.org/docbook/xml/5.0/xsd/xlink.xsd" "xlink.xsd" /usr/local/share/xml/docbook/schema/xsd/5.0/catalog.xml
+xmlcatalog --noout --add "uri" "http://docbook.org/xml/5.0/xsd/xml.xsd" "xml.xsd" /usr/local/share/xml/docbook/schema/xsd/5.0/catalog.xml
+xmlcatalog --noout --add "uri" "http://www.oasis-open.org/docbook/xml/5.0/xsd/xml.xsd" "xml.xsd" /usr/local/share/xml/docbook/schema/xsd/5.0/catalog.xml
+xmlcatalog --noout --add "delegatePublic" "-//OASIS//DTD DocBook XML 5.0//EN" "file:///usr/local/share/xml/docbook/schema/dtd/5.0/catalog.xml" /usr/local/etc/xml/catalog
+xmlcatalog --noout --add "delegateSystem" "http://docbook.org/xml/5.0/dtd/" "file:///usr/local/share/xml/docbook/schema/dtd/5.0/catalog.xml" /usr/local/etc/xml/catalog
+xmlcatalog --noout --add "delegateURI" "http://docbook.org/xml/5.0/dtd/" "file:///usr/local/share/xml/docbook/schema/dtd/5.0/catalog.xml" /usr/local/etc/xml/catalog
+xmlcatalog --noout --add "delegateURI" "http://docbook.org/xml/5.0/rng/" "file:///usr/local/share/xml/docbook/schema/rng/5.0/catalog.xml" /usr/local/etc/xml/catalog
+xmlcatalog --noout --add "delegateURI" "http://docbook.org/xml/5.0/sch/" "file:///usr/local/share/xml/docbook/schema/sch/5.0/catalog.xml" /usr/local/etc/xml/catalog
+xmlcatalog --noout --add "delegateURI" "http://docbook.org/xml/5.0/xsd/"  "file:///usr/local/share/xml/docbook/schema/xsd/5.0/catalog.xml" /usr/local/etc/xml/catalog
+cd ..
+rm -rf ./docbook-xml
+mkdir -p ./docbook-xml
+curl -L https://docbook.org/xml/5.1/docbook-v5.1-os.zip -o ./docbook-xml.zip
+cd ./docbook-xml
+unzip ../docbook-xml.zip
+rm ../docbook-xml.zip
+mkdir -p /usr/local/share/xml/docbook/schema/{rng,sch}/5.1
+cp -r schemas/rng/* /usr/local/share/xml/docbook/schema/rng/5.1
+cp -r schemas/sch/* /usr/local/share/xml/docbook/schema/sch/5.1
+cp -r tools/db4-entities.pl /usr/local/bin
+mkdir -p /usr/local/share/xml/docbook/stylesheet/docbook5
+cp -r tools/db4-upgrade.xsl /usr/local/share/xml/docbook/stylesheet/docbook5
+xmlcatalog --noout --create /usr/local/etc/xml/docbook-5.1
+xmlcatalog --noout --add "uri" "http://www.oasis-open.org/docbook/xml/5.1/rng/docbook.rng" "file:///usr/local/share/xml/docbook/schema/rng/5.1/docbook.rng" /usr/local/etc/xml/docbook-5.1
+xmlcatalog --noout --add "uri" "http://docbook.org/xml/5.1/rng/docbook.rng" "file:///usr/local/share/xml/docbook/schema/rng/5.1/docbook.rng" /usr/local/etc/xml/docbook-5.1
+xmlcatalog --noout --add "uri" "http://www.oasis-open.org/docbook/xml/5.1/rng/docbookxi.rng" "file:///usr/local/share/xml/docbook/schema/rng/5.1/docbookxi.rng" /usr/local/etc/xml/docbook-5.1
+xmlcatalog --noout --add "uri" "http://docbook.org/xml/5.1/rng/docbookxi.rng" "file:///usr/local/share/xml/docbook/schema/rng/5.1/docbookxi.rng" /usr/local/etc/xml/docbook-5.1
+xmlcatalog --noout --add "uri" "http://www.oasis-open.org/docbook/xml/5.1/rnc/docbook.rnc" "file:///usr/local/share/xml/docbook/schema/rng/5.1/docbook.rnc" /usr/local/etc/xml/docbook-5.1
+xmlcatalog --noout --add "uri" "http://docbook.org/xml/5.1/rng/docbook.rnc" "file:///usr/local/share/xml/docbook/schema/rng/5.1/docbook.rnc" /usr/local/etc/xml/docbook-5.1
+xmlcatalog --noout --add "uri" "http://www.oasis-open.org/docbook/xml/5.1/rnc/docbookxi.rnc" "file:///usr/local/share/xml/docbook/schema/rng/5.1/docbookxi.rnc" /usr/local/etc/xml/docbook-5.1
+xmlcatalog --noout --add "uri" "http://docbook.org/xml/5.1/rng/docbookxi.rnc" "file:///usr/local/share/xml/docbook/schema/rng/5.1/docbookxi.rnc" /usr/local/etc/xml/docbook-5.1
+xmlcatalog --noout --add "uri" "http://www.oasis-open.org/docbook/xml/5.1/sch/docbook.sch" "file:///usr/local/share/xml/docbook/schema/sch/5.1/docbook.sch" /usr/local/etc/xml/docbook-5.1
+xmlcatalog --noout --add "uri" "http://docbook.org/xml/5.1/sch/docbook.sch" "file:///usr/local/share/xml/docbook/schema/sch/5.1/docbook.sch" /usr/local/etc/xml/docbook-5.1
+xmlcatalog --noout --create /usr/local/share/xml/docbook/schema/rng/5.1/catalog.xml
+xmlcatalog --noout --add "uri" "http://docbook.org/xml/5.1/schemas/rng/docbook.schemas/rng" "docbook.schemas/rng" /usr/local/share/xml/docbook/schema/rng/5.1/catalog.xml
+xmlcatalog --noout --add "uri" "http://www.oasis-open.org/docbook/xml/5.1/schemas/rng/docbook.schemas/rng" "docbook.schemas/rng" /usr/local/share/xml/docbook/schema/rng/5.1/catalog.xml
+xmlcatalog --noout --add "uri" "http://docbook.org/xml/5.1/schemas/rng/docbookxi.schemas/rng" "docbookxi.schemas/rng" /usr/local/share/xml/docbook/schema/rng/5.1/catalog.xml
+xmlcatalog --noout --add "uri" "http://www.oasis-open.org/docbook/xml/5.1/schemas/rng/docbookxi.schemas/rng" "docbookxi.schemas/rng" /usr/local/share/xml/docbook/schema/rng/5.1/catalog.xml
+xmlcatalog --noout --add "uri" "http://docbook.org/xml/5.1/schemas/rng/docbook.rnc" "docbook.rnc" /usr/local/share/xml/docbook/schema/rng/5.1/catalog.xml
+xmlcatalog --noout --add "uri" "http://www.oasis-open.org/docbook/xml/5.1/schemas/rng/docbook.rnc" "docbook.rnc" /usr/local/share/xml/docbook/schema/rng/5.1/catalog.xml
+xmlcatalog --noout --add "uri" "http://docbook.org/xml/5.1/schemas/rng/docbookxi.rnc" "docbookxi.rnc" /usr/local/share/xml/docbook/schema/rng/5.1/catalog.xml
+xmlcatalog --noout --add "uri" "http://www.oasis-open.org/docbook/xml/5.1/schemas/rng/docbookxi.rnc" "docbookxi.rnc" /usr/local/share/xml/docbook/schema/rng/5.1/catalog.xml
+xmlcatalog --noout --create /usr/local/share/xml/docbook/schema/sch/5.1/catalog.xml
+xmlcatalog --noout --add "uri" "http://docbook.org/xml/5.1/schemas/sch/docbook.schemas/sch" "docbook.schemas/sch" /usr/local/share/xml/docbook/schema/sch/5.1/catalog.xml
+xmlcatalog --noout --add "uri" "http://www.oasis-open.org/docbook/xml/5.1/schemas/sch/docbook.schemas/sch" "docbook.schemas/sch" /usr/local/share/xml/docbook/schema/sch/5.1/catalog.xml
+xmlcatalog --noout --add "delegatePublic" "-//OASIS//DTD DocBook XML 5.1//EN" "file:///usr/local/share/xml/docbook/schema/dtd/5.1/catalog.xml" /usr/local/etc/xml/catalog
+xmlcatalog --noout --add "delegateSystem" "http://docbook.org/xml/5.1/dtd/" "file:///usr/local/share/xml/docbook/schema/dtd/5.1/catalog.xml" /usr/local/etc/xml/catalog
+xmlcatalog --noout --add "delegateURI" "http://docbook.org/xml/5.1/dtd/" "file:///usr/local/share/xml/docbook/schema/dtd/5.1/catalog.xml" /usr/local/etc/xml/catalog
+xmlcatalog --noout --add "delegateURI" "http://docbook.org/xml/5.1/rng/" "file:///usr/local/share/xml/docbook/schema/rng/5.1/catalog.xml" /usr/local/etc/xml/catalog
+xmlcatalog --noout --add "delegateURI" "http://docbook.org/xml/5.1/sch/" "file:///usr/local/share/xml/docbook/schema/sch/5.1/catalog.xml" /usr/local/etc/xml/catalog
+xmlcatalog --noout --add "delegateURI" "http://docbook.org/xml/5.1/xsd/" "file:///usr/local/share/xml/docbook/schema/xsd/5.1/catalog.xml" /usr/local/etc/xml/catalog
+cd ..
+rm -rf ./docbook-xml
+curl -L http://www.docbook.org/sgml/3.1/docbk31.zip -o ./docbook-dtd.zip
+mkdir ./docbook-dtd
+cd ./docbook-dtd
+unzip ../docbook-dtd.zip
+rm ../docbook-dtd.zip
+mkdir -p /usr/local/share/sgml/docbook/sgml-dtd-3.1
+cp docbook.cat /usr/local/share/sgml/docbook/sgml-dtd-3.1/catalog
+cp -af *.dtd *.mod *.dcl /usr/local/share/sgml/docbook/sgml-dtd-3.1
+install-catalog --add /usr/local/etc/sgml/sgml-docbook-dtd-3.1.cat /usr/local/share/sgml/docbook/sgml-dtd-3.1/catalog
+install-catalog --add /usr/local/etc/sgml/sgml-docbook-dtd-3.1.cat /usr/local/etc/sgml/sgml-docbook.cat
+cd ..
+rm -rf ./docbook-dtd
+curl -L http://www.docbook.org/sgml/4.5/docbook-4.5.zip -o ./docbook-dtd.zip
+mkdir ./docbook-dtd
+cd ./docbook-dtd
+unzip ../docbook-dtd.zip
+rm ../docbook-dtd.zip
+mkdir -p /usr/local/share/sgml/docbook/sgml-dtd-4.5
+cp docbook.cat /usr/local/share/sgml/docbook/sgml-dtd-4.5/catalog
+cp -af *.dtd *.mod *.dcl /usr/local/share/sgml/docbook/sgml-dtd-4.5
+install-catalog --add /usr/local/etc/sgml/sgml-docbook-dtd-4.5.cat /usr/local/share/sgml/docbook/sgml-dtd-4.5/catalog
+install-catalog --add /usr/local/etc/sgml/sgml-docbook-dtd-4.5.cat /usr/local/etc/sgml/sgml-docbook.cat
+cd ..
+rm -rf ./docbook-dtd
+curl -L https://downloads.sourceforge.net/docbook/docbook-dsssl-1.79.tar.bz2 -o ./docbook-dsssl.tar.bz2
+mkdir ./docbook-dsssl
+cd ./docbook-dsssl
+tar xf ../docbook-dsssl.tar.bz2 --strip 1
+rm ../docbook-dsssl.tar.bz2
+cp bin/collateindex.pl /usr/local/bin
+cp bin/collateindex.pl.1 /usr/local/share/man/man1
+mkdir -p /usr/local/share/sgml/docbook/dsssl-stylesheets-1.79
+cp -R * /usr/local/share/sgml/docbook/dsssl-stylesheets-1.79
+install-catalog --add /usr/local/etc/sgml/dsssl-docbook-stylesheets.cat /usr/local/share/sgml/docbook/dsssl-stylesheets-1.79/catalog
+install-catalog --add /usr/local/etc/sgml/dsssl-docbook-stylesheets.cat /usr/local/share/sgml/docbook/dsssl-stylesheets-1.79/common/catalog
+install-catalog --add /usr/local/etc/sgml/sgml-docbook.cat /usr/local/etc/sgml/dsssl-docbook-stylesheets.cat
+cd ..
+rm -rf ./docbook-dsssl
+curl -L https://github.com/docbook/xslt10-stylesheets/releases/download/release/1.79.2/docbook-xsl-1.79.2.tar.bz2 -o ./docbook-xsl.tar.bz2
+mkdir docbook-xsl
+cd docbook-xsl
+tar xf ../docbook-xsl.tar.bz2 --strip 1
+rm ../docbook-xsl.tar.bz2
+mkdir -p /usr/local/share/xml/docbook/xsl-stylesheets-1.79.2
+cp -R VERSION assembly common eclipse epub epub3 extensions fo          \
+	highlighting html htmlhelp images javahelp lib manpages params  \
+	profiling roundtrip slides template tests tools webhelp website \
+	xhtml xhtml-1_1 xhtml5                                          \
+	/usr/local/share/xml/docbook/xsl-stylesheets-1.79.2
+ln -s VERSION /usr/local/share/xml/docbook/xsl-stylesheets-1.79.2/VERSION.xsl
+xmlcatalog --noout --add "rewriteSystem" "http://docbook.sourceforge.net/release/xsl/1.79.2" "/usr/local/share/xml/docbook/xsl-stylesheets-1.79.2" /usr/local/etc/xml/catalog
+xmlcatalog --noout --add "rewriteURI" "http://docbook.sourceforge.net/release/xsl/1.79.2" "/usr/local/share/xml/docbook/xsl-stylesheets-1.79.2" /usr/local/etc/xml/catalog
+xmlcatalog --noout --add "rewriteSystem" "http://docbook.sourceforge.net/release/xsl/current" "/usr/local/share/xml/docbook/xsl-stylesheets-1.79.2" /usr/local/etc/xml/catalog
+xmlcatalog --noout --add "rewriteURI" "http://docbook.sourceforge.net/release/xsl/current" "/usr/local/share/xml/docbook/xsl-stylesheets-1.79.2" /usr/local/etc/xml/catalog
+cd ..
+rm -rf ./docbook-xsl
+curl -L https://github.com/docbook/xslt10-stylesheets/releases/download/release/1.79.2/docbook-xsl-nons-1.79.2.tar.bz2 -o ./docbook-xsl-nons.tar.bz2
+mkdir docbook-xsl-nons
+cd docbook-xsl-nons
+tar xf ../docbook-xsl-nons.tar.bz2 --strip 1
+rm ../docbook-xsl-nons.tar.bz2
+mkdir -p /usr/local/share/xml/docbook/xsl-stylesheets-nons-1.79.2
+cp -R VERSION assembly common eclipse epub epub3 extensions fo        \
+	highlighting html htmlhelp images javahelp lib manpages params   \
+	profiling roundtrip slides template tests tools webhelp website  \
+	xhtml xhtml-1_1 xhtml5                                           \
+	/usr/local/share/xml/docbook/xsl-stylesheets-nons-1.79.2
+ln -s VERSION /usr/local/share/xml/docbook/xsl-stylesheets-nons-1.79.2/VERSION.xsl
+xmlcatalog --noout --add "rewriteSystem" "https://cdn.docbook.org/release/xsl-nons/1.79.2" "/usr/local/share/xml/docbook/xsl-stylesheets-nons-1.79.2" /usr/local/etc/xml/catalog
+xmlcatalog --noout --add "rewriteURI" "https://cdn.docbook.org/release/xsl-nons/1.79.2" "/usr/local/share/xml/docbook/xsl-stylesheets-nons-1.79.2" /usr/local/etc/xml/catalog
+xmlcatalog --noout --add "rewriteSystem" "https://cdn.docbook.org/release/xsl-nons/current" "/usr/local/share/xml/docbook/xsl-stylesheets-nons-1.79.2" /usr/local/etc/xml/catalog
+xmlcatalog --noout --add "rewriteURI" "https://cdn.docbook.org/release/xsl-nons/current" "/usr/local/share/xml/docbook/xsl-stylesheets-nons-1.79.2" /usr/local/etc/xml/catalog
+xmlcatalog --noout --add "rewriteSystem" "http://docbook.sourceforge.net/release/xsl/current" "/usr/local/share/xml/docbook/xsl-stylesheets-nons-1.79.2" /usr/local/etc/xml/catalog
+xmlcatalog --noout --add "rewriteURI" "http://docbook.sourceforge.net/release/xsl/current" "/usr/local/share/xml/docbook/xsl-stylesheets-nons-1.79.2" /usr/local/etc/xml/catalog
+cd ..
+rm -rf ./docbook-xsl-nons
+mkdir -p /out/usr/local/etc/sgml /out/usr/local/etc/xml /out/usr/local/share/sgml /out/usr/local/share/xml
+cp -r /usr/local/etc/sgml/* /out/usr/local/etc/sgml/
+cp -r /usr/local/etc/xml/* /out/usr/local/etc/xml/
+cp -r /usr/local/share/sgml/* /out/usr/local/share/sgml/
+cp -r /usr/local/share/xml/* /out/usr/local/share/xml/
+read -p "Press any key to resume ..."
+
+fi
+
+if [ ! -z $build_all ] || [ ! -z $build_libxslt ]; then
+
+mkdir -p ./libxslt
+curl ftp://xmlsoft.org/libxslt/libxslt-1.1.34.tar.gz -o ./libxslt.tar.gz
+tar zxf ./libxslt.tar.gz -C ./libxslt --strip 1
+rm ./libxslt.tar.gz
+cd ./libxslt
+sed -e 's@http://cdn.docbook.org/release/xsl@https://cdn.docbook.org/release/xsl-nons@' -e 's@\$Date\$@31 October 2019@' -i doc/xsltproc.xml
+./configure --prefix=/usr/local --libdir=/usr/local/lib64 --without-python
+make -j$(($(nproc)-1))
+make install
+make DESTDIR=/out install
+cd ..
+rm -rf ./libxslt
+read -p "Press any key to resume ..."
+
+fi
+
+if [ ! -z $build_all ] || [ ! -z $build_itstool ]; then
+
+mkdir -p ./itstool
+curl -L http://files.itstool.org/itstool/itstool-2.0.6.tar.bz2 -o ./itstool.tar.bz2
+tar xf ./itstool.tar.bz2 -C ./itstool --strip 1
+rm ./itstool.tar.bz2
+cd ./itstool
+./configure --prefix=/usr/local
+make -j$(($(nproc)-1))
+make install
+make DESTDIR=/out install
+cd ..
+rm -rf ./itstool
+read -p "Press any key to resume ..."
+
+fi
+
+if [ ! -z $build_all ] || [ ! -z $build_xmlto ]; then
+
+mkdir -p ./xmlto
+curl https://releases.pagure.org/xmlto/xmlto-0.0.28.tar.gz -o ./xmlto.tar.gz
+tar zxf ./xmlto.tar.gz -C ./xmlto --strip 1
+rm ./xmlto.tar.gz
+cd ./xmlto
+./configure --prefix=/usr/local --libdir=/usr/local/lib64
+make -j$(($(nproc)-1))
+make install
+make DESTDIR=/out install
+cd ..
+rm -rf ./xmlto
+read -p "Press any key to resume ..."
+
+fi
+
+if [ ! -z $build_all ] || [ ! -z $build_pax_utils ]; then
+
+git clone https://github.com/gentoo/pax-utils.git -b v1.2.6 pax-utils
+cd ./pax-utils
+sed -i 's#PREFIX     = $(DESTDIR)/usr#PREFIX     = $(DESTDIR)/usr/local#g' ./Makefile
+make -j$(($(nproc)-1))
+cd man
+make
+cd ..
+make install
+make DESTDIR=/out install
+cd ..
+rm -rf ./pax-utils
+read -p "Press any key to resume ..."
+
+fi
+
+if [ ! -z $build_all ] || [ ! -z $build_make ]; then
+
+mkdir -p ./make
+curl https://ftp.gnu.org/gnu/make/make-4.3.tar.gz -o ./make.tar.gz
+tar zxf ./make.tar.gz -C ./make --strip 1
+rm ./make.tar.gz
+cd ./make
+./configure --prefix=/usr/local --libdir=/usr/local/lib64 --without-guile
+make -j$(($(nproc)-1))
+make DESTDIR=/out install
+cd ..
+rm -rf ./make
+read -p "Press any key to resume ..."
+
+fi
+
+if [ ! -z $build_all ] || [ ! -z $build_gcc ]; then
+
+mkdir -p ./gcc/out
+curl https://ftp.gnu.org/gnu/gcc/gcc-10.2.0/gcc-10.2.0.tar.gz -o ./gcc.tar.gz
+tar zxf ./gcc.tar.gz -C ./gcc --strip 1
+rm ./gcc.tar.gz
+cd ./gcc
+./contrib/download_prerequisites
+cd ./out
+../configure --prefix=/usr/local --libdir=/usr/local/lib64 --enable-languages=c,c++,d,fortran,go,objc,obj-c++ --with-glibc-version=2.27 --disable-multilib --disable-nls --disable-libssp --without-zstd
+make -j$(($(nproc)-1))
+make DESTDIR=/out install-strip
+ln -v -sf gcc /out/usr/local/bin/cc
+ln -v -sf cpp /out/usr/local/bin/x86_64-pc-linux-gnu-cpp
+cd ../..
+rm -rf ./gcc
+read -p "Press any key to resume ..."
+
+fi
+
+if [ ! -z $build_all ] || [ ! -z $build_binutils ]; then
+
+mkdir -p ./binutils/out
+curl https://ftp.gnu.org/gnu/binutils/binutils-2.35.tar.gz -o ./binutils.tar.gz
+tar zxf ./binutils.tar.gz -C ./binutils --strip 1
+rm ./binutils.tar.gz
+cd ./binutils/out
+../configure --prefix=/usr/local --libdir=/usr/local/lib64 --enable-gold --enable-gold=default --disable-nls --disable-libssp
+make -j$(($(nproc)-1))
+make DESTDIR=/out install-strip
+ln -v -sf ld /out/usr/local/bin/x86_64-pc-linux-gnu-ld
+ln -v -sf ld.bfd /out/usr/local/bin/x86_64-pc-linux-gnu-ld.bfd
+ln -v -sf ld.gold /out/usr/local/bin/x86_64-pc-linux-gnu-ld.gold
+cd ../..
+rm -rf ./binutils
+read -p "Press any key to resume ..."
+
+fi
+
+if [ ! -z $build_all ] || [ ! -z $build_linux_headers ]; then
+
+mkdir -p ./linux_headers
+curl https://chromium.googlesource.com/chromiumos/third_party/kernel/+archive/refs/heads/master.tar.gz -o ./chromiumos_kernel.tar.gz
+tar zxf ./chromiumos_kernel.tar.gz -C ./linux_headers
+rm ./chromiumos_kernel.tar.gz
+cd ./linux_headers
+make headers_install INSTALL_HDR_PATH=/out/usr/local
+cd ..
+rm -rf ./linux_headers
+read -p "Press any key to resume ..."
+
+fi
+
+if [ ! -z $build_all ] || [ ! -z $build_glibc ]; then
+
+mkdir -p ./glibc/out
+curl https://ftp.gnu.org/gnu/glibc/glibc-2.27.tar.gz -o ./glibc.tar.gz
+tar zxf ./glibc.tar.gz -C ./glibc --strip 1
+rm ./glibc.tar.gz
+curl https://dev.gentoo.org/~dilfridge/distfiles/glibc-2.27-patches-3.tar.bz2 -o ./glibc-patches.tar.gz
+tar xjf ./glibc-patches.tar.gz -C ./glibc
+rm ./glibc-patches.tar.gz
+cd ./glibc
+for glibc_patch in ./patches/*.patch
+do
+echo $glibc_patch
+patch -p1 --no-backup-if-mismatch -N < $glibc_patch
+done
+cd ./out
+../configure --prefix=/usr/local --libdir=/usr/local/lib64 --enable-kernel=3.2 --with-headers=/out/usr/local/include --without-selinux --disable-nls libc_cv_slibdir=/lib64 --disable-sanity-checks CFLAGS="-O2 -Wno-zero-length-bounds -Wno-maybe-uninitialized -Wno-error=missing-attributes -Wno-error=array-bounds"
+make -j$(($(nproc)-1))
+make DESTDIR=/out install
+rm -r /out/lib64
+cd ..
+rm -rf ./glibc
+read -p "Press any key to resume ..."
+
+fi
+
+cat >/out/usr/local/bin/start-toolchain <<TOOLCHAIN
+#!/bin/bash
+export C_INCLUDE_PATH=/usr/local/include/ncurses
+export GCONV_PATH=/usr/local/lib64/gconv
+export PKG_CONFIG_PATH=/usr/local/lib64/pkgconfig
+export PYTHON=/usr/local/bin/python3
+export PYTHONHOME=/usr/local 
+export PERL5LIB=/usr/local/lib/perl5/5.32.0
+export XML_CATALOG_FILES="/usr/local/etc/xml/catalog"
+export SGML_CATALOG_FILES="/usr/local/etc/sgml/catalog"
+
+if mountpoint -q /usr/lib64; then sudo umount /usr/lib64; fi
+if mountpoint -q /usr/include; then sudo umount /usr/include; fi
+
+if [ -d /usr/local/tmp/newlib64 ]; then sudo rm -r /usr/local/tmp/newlib64; fi
+mkdir -p /usr/local/tmp/newlib64
+sudo cp -a /usr/lib64/* /usr/local/tmp/newlib64/
+#glibc location fix
+for f in /usr/local/lib64/*_nonshared.a; do
+file=\$(echo "\$f" | sed 's#/usr/local/lib64/##g')
+if [ ! -e "/usr/local/tmp/lib64/\$file" ]; then sudo ln -s -v "/usr/local/lib64/\$file" "/usr/local/tmp/newlib64/\$file"; fi
+done
+for f in /usr/local/lib64/*.o; do
+file=\$(echo "\$f" | sed 's#/usr/local/lib64/##g')
+if [ ! -e "/usr/local/tmp/lib64/\$file" ]; then sudo ln -s -v "/usr/local/lib64/\$file" "/usr/local/tmp/newlib64/\$file"; fi
+done
+sudo mount -o bind /usr/local/tmp/newlib64 /usr/lib64
+sudo mount -o bind /usr/local/include /usr/include
+TOOLCHAIN
+chmod 0755 /out/usr/local/bin/start-toolchain
+
+cd /out/usr/local
+tar zcvf /out/brunch_toolchain.tar.gz * --owner=0 --group=0
+rm -rf /out/usr
+
