@@ -12,7 +12,7 @@ This project consists in providing ChromeOS with a dedicated toolchain and more 
 - lxc
 
 Why do I need it ?
-You don't necessarily need it, currently it would mostly be useful for developpers or if there is a specific app / kernel module that you need to build from source.
+You don't necessarily need it, currently it would mostly be useful for developers or if there is a specific app / kernel module that you need to build from source.
 
 How is that different from Chromebrew ?
 Chromebrew is a package manager, you can create a toolchain with it by installing all the necessary packages but I needed to have one more adapted to my use.
@@ -36,7 +36,7 @@ sudo rm -r /usr/local/*
 sudo chown -R 1000:1000 /usr/local
 ```
 
-3. Dowload the brunch toolchain release and extract it in /usr/local:
+3. Download the brunch toolchain release and extract it in /usr/local:
 ```
 tar zxf <brunch_toolchain_archive> -C /usr/local
 ```
