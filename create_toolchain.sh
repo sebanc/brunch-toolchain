@@ -1,7 +1,7 @@
+#!/bin/bash
 mkdir -p ./bootstrap/usr/local
 
 BUILDPATH=$(dirname $(realpath "$0"))
-echo "$BUILDPATH"
 
 build_all=1
 
@@ -77,8 +77,7 @@ cd ./out
 ../configure --prefix=/usr/local --libdir=/usr/local/lib64 --enable-kernel=3.2 --with-headers="$BUILDPATH"/bootstrap/usr/local/include --without-selinux --disable-nls libc_cv_slibdir=/lib64 --disable-sanity-checks CFLAGS="-O2 -Wno-maybe-uninitialized -Wno-error=missing-attributes -Wno-error=array-bounds"
 make -j$(($(nproc)-1))
 make DESTDIR="$BUILDPATH"/bootstrap install
-cd ../../bootstrap
-cd ..
+cd ../..
 rm -rf ./glibc
 read -p "Press any key to resume ..."
 

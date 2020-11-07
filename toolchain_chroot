@@ -1,6 +1,6 @@
 #!/bin/bash
 export PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
-export LD_LIBRARY_PATH=/usr/local/lib64:/usr/local/lib:/lib64:/lib:/usr/lib64:/usr/lib
+export LD_LIBRARY_PATH=/usr/local/lib64:/usr/local/lib:/usr/lib64:/usr/lib:/lib64:/lib
 export C_INCLUDE_PATH=/usr/local/include/ncurses
 export GCONV_PATH=/usr/local/lib64/gconv
 export PKG_CONFIG_PATH=/usr/local/lib64/pkgconfig
@@ -13,7 +13,7 @@ export LANGUAGE=en_US.UTF-8
 export LANG=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
 
-#glibc location fix
+# glibc location fix
 for f in /usr/local/lib64/*_nonshared.a; do
 file=$(echo "$f" | sed 's#/usr/local/lib64/##g')
 if [ ! -e "/usr/lib64/$file" ]; then sudo ln -s -v "/usr/local/lib64/$file" "/usr/lib64/$file"; fi
@@ -224,8 +224,8 @@ tar zxf ./bzip2.tar.gz -C ./bzip2 --strip 1
 rm ./bzip2.tar.gz
 cd ./bzip2
 sed -i "s#\$(PREFIX)/lib#\$(PREFIX)/lib64#g" Makefile
-make -f Makefile-libbz2_so
-make
+make -j$(($(nproc)-1)) -f Makefile-libbz2_so
+make -j$(($(nproc)-1))
 make install PREFIX=/usr/local
 make install PREFIX=/out/usr/local
 cp ./libbz2.so* /out/usr/local/lib64/
@@ -292,7 +292,7 @@ curl -L https://downloads.sourceforge.net/infozip/zip30.tar.gz -o ./zip.tar.gz
 tar zxf ./zip.tar.gz -C ./zip --strip 1
 rm ./zip.tar.gz
 cd ./zip
-make -f unix/Makefile generic_gcc
+make -j$(($(nproc)-1)) -f unix/Makefile generic_gcc
 make prefix=/usr/local -f unix/Makefile install
 make prefix=/out/usr/local -f unix/Makefile install
 cd ..
@@ -308,7 +308,7 @@ curl -L https://downloads.sourceforge.net/infozip/unzip60.tar.gz -o ./unzip.tar.
 tar zxf ./unzip.tar.gz -C ./unzip --strip 1
 rm ./unzip.tar.gz
 cd ./unzip
-make -f unix/Makefile generic_gcc
+make -j$(($(nproc)-1)) -f unix/Makefile generic_gcc
 make prefix=/usr/local -f unix/Makefile install
 make prefix=/out/usr/local -f unix/Makefile install
 cd ..
@@ -334,13 +334,30 @@ read -p "Press any key to resume ..."
 
 fi
 
+if [ ! -z $build_all ] || [ ! -z $build_cpio ]; then
+
+mkdir ./cpio
+curl -L https://ftp.gnu.org/gnu/cpio/cpio-2.13.tar.gz -o ./cpio.tar.gz
+tar zxf cpio.tar.gz -C ./cpio --strip 1
+rm ./cpio.tar.gz
+cd ./cpio
+./configure --prefix=/usr/local --libdir=/usr/local/lib64 CFLAGS="-fcommon"
+make -j$(($(nproc)-1))
+make install
+make DESTDIR=/out install
+cd ..
+rm -rf ./cpio
+read -p "Press any key to resume ..."
+
+fi
+
 if [ ! -z $build_all ] || [ ! -z $build_squashfs ]; then
 
 curl -L https://github.com/plougher/squashfs-tools/archive/master.tar.gz -o squashfs.tar.gz
 tar zxf ./squashfs.tar.gz squashfs-tools-master/squashfs-tools --strip 1
 rm ./squashfs.tar.gz
 cd squashfs-tools
-make
+make -j$(($(nproc)-1))
 cp mksquashfs /usr/local/bin/
 cp unsquashfs /usr/local/bin/
 cp mksquashfs /out/usr/local/bin/
@@ -655,6 +672,154 @@ make install
 make DESTDIR=/out install
 cd ..
 rm -rf ./man-db
+read -p "Press any key to resume ..."
+
+fi
+
+if [ ! -z $build_all ] || [ ! -z $build_help2man ]; then
+
+mkdir ./help2man
+curl -L https://ftp.gnu.org/gnu/help2man/help2man-1.47.16.tar.xz -o ./help2man.tar.xz
+tar xf ./help2man.tar.xz -C ./help2man --strip 1
+rm ./help2man.tar.xz
+cd ./help2man
+./configure --prefix=/usr/local --libdir=/usr/local/lib64
+make -j$(($(nproc)-1))
+make install
+make DESTDIR=/out install
+cd ..
+rm -rf ./help2man
+read -p "Press any key to resume ..."
+
+fi
+
+if [ ! -z $build_all ] || [ ! -z $build_libtasn1 ]; then
+
+mkdir ./libtasn1
+curl -L http://ftp.gnu.org/gnu/libtasn1/libtasn1-4.16.0.tar.gz -o ./libtasn1.tar.gz
+tar xf ./libtasn1.tar.gz -C ./libtasn1 --strip 1
+rm ./libtasn1.tar.gz
+cd ./libtasn1
+./bootstrap
+./autogen.sh
+./configure --prefix=/usr/local --libdir=/usr/local/lib64
+make -j$(($(nproc)-1))
+make install
+make DESTDIR=/out install
+cd ..
+rm -rf ./libtasn1
+read -p "Press any key to resume ..."
+
+fi
+
+if [ ! -z $build_all ] || [ ! -z $build_tcl ]; then
+
+mkdir ./tcl
+curl -L https://github.com/tcltk/tcl/archive/core-8-6-10.tar.gz -o ./tcl.tar.gz
+tar zxf ./tcl.tar.gz -C ./tcl --strip 1
+rm ./tcl.tar.gz
+cd ./tcl/unix
+./configure --prefix=/usr/local --libdir=/usr/local/lib64
+make -j$(($(nproc)-1))
+make install
+make DESTDIR=/out install
+make install-private-headers
+make DESTDIR=/out install-private-headers
+cd ../..
+rm -rf ./tcl
+read -p "Press any key to resume ..."
+
+fi
+
+if [ ! -z $build_all ] || [ ! -z $build_expect ]; then
+
+mkdir ./expect
+curl -L https://downloads.sourceforge.net/project/expect/Expect/5.45.4/expect5.45.4.tar.gz -o ./expect.tar.gz
+tar zxf ./expect.tar.gz -C ./expect --strip 1
+rm ./expect.tar.gz
+cd ./expect
+./configure --prefix=/usr/local --libdir=/usr/local/lib64 --with-tcl=/usr/local/lib64
+make -j$(($(nproc)-1))
+make install
+make DESTDIR=/out install
+cd ..
+rm -rf ./expect
+read -p "Press any key to resume ..."
+
+fi
+
+if [ ! -z $build_all ] || [ ! -z $build_icmake ]; then
+
+mkdir ./icmake
+curl -L https://gitlab.com/fbb-git/icmake/-/archive/9.03.01/icmake-9.03.01.tar.gz -o ./icmake.tar.gz
+tar zxf ./icmake.tar.gz -C ./icmake --strip 1
+rm ./icmake.tar.gz
+cd ./icmake/icmake
+cat <<'ICMAKE' > ./INSTALL.im
+#define BINDIR      "usr/local/bin"
+#define SKELDIR     "usr/local/share/icmake"
+#define MANDIR      "usr/local/share/man"
+#define LIBDIR      "usr/local/lib/icmake"
+#define CONFDIR     "usr/local/etc/icmake"
+#define DOCDIR      "usr/local/share/doc/icmake"
+#define DOCDOCDIR   "usr/local/share/doc/icmake-doc"
+ICMAKE
+./icm_prepare /
+./icm_bootstrap x
+./icm_install all
+rm -rf ./tmp
+./icm_prepare /out
+./icm_bootstrap x
+ln -s . /out/out
+./icm_install all
+rm /out/out
+cd ../..
+rm -rf ./icmake
+read -p "Press any key to resume ..."
+
+fi
+
+if [ ! -z $build_all ] || [ ! -z $build_yodl ]; then
+
+mkdir ./yodl
+curl -L https://gitlab.com/fbb-git/yodl/-/archive/4.03.00/yodl-4.03.00.tar.gz -o ./yodl.tar.gz
+tar zxf ./yodl.tar.gz -C ./yodl --strip 1
+rm ./yodl.tar.gz
+cd ./yodl/yodl
+sed -i 's#BASE    = "/usr"#BASE    = "/usr/local"#g' ./INSTALL.im
+sed -i 's#/usr/bin/icmake#/usr/local/bin/icmake#g' ./build
+sed -i 's#/usr/bin/perl#/usr/local/bin/perl#g' ./contrib/*
+sed -i 's#/usr/bin/perl#/usr/local/bin/perl#g' ./macros/rawmacros/*
+sed -i 's#/usr/bin/perl#/usr/local/bin/perl#g' ./scripts/*
+CXXFLAGS="-fpermissive --std=c++17" ./build programs
+CXXFLAGS="-fpermissive --std=c++17" ./build macros
+CXXFLAGS="-fpermissive --std=c++17" ./build man
+./build install programs /
+./build install macros /
+./build install man /
+./build install programs /out
+./build install macros /out
+./build install man /out
+cd ../..
+rm -rf ./yodl
+read -p "Press any key to resume ..."
+
+fi
+
+if [ ! -z $build_all ] || [ ! -z $build_socat ]; then
+
+mkdir ./socat
+curl -L http://www.dest-unreach.org/socat/download/socat-1.7.3.4.tar.gz -o ./socat.tar.gz
+tar zxf ./socat.tar.gz -C ./socat --strip 1
+rm ./socat.tar.gz
+cd ./socat
+autoconf
+./configure --prefix=/usr/local --libdir=/usr/local/lib64
+make -j$(($(nproc)-1))
+make install
+make DESTDIR=/out install
+cd ..
+rm -rf ./socat
 read -p "Press any key to resume ..."
 
 fi
@@ -1291,7 +1456,7 @@ cd ./pax-utils
 sed -i 's#PREFIX     = $(DESTDIR)/usr#PREFIX     = $(DESTDIR)/usr/local#g' ./Makefile
 make -j$(($(nproc)-1))
 cd man
-make
+make -j$(($(nproc)-1))
 cd ..
 make install
 make DESTDIR=/out install
@@ -1397,33 +1562,15 @@ read -p "Press any key to resume ..."
 fi
 
 cat >/out/usr/local/bin/start-toolchain <<TOOLCHAIN
-#!/bin/bash
 export C_INCLUDE_PATH=/usr/local/include/ncurses
 export GCONV_PATH=/usr/local/lib64/gconv
+export LD_LIBRARY_PATH=/usr/local/lib64:/usr/local/lib:/usr/lib64:/usr/lib:/lib64:/lib
+export PERL5LIB=/usr/local/lib/perl5/5.32.0
 export PKG_CONFIG_PATH=/usr/local/lib64/pkgconfig
 export PYTHON=/usr/local/bin/python3
-export PYTHONHOME=/usr/local 
-export PERL5LIB=/usr/local/lib/perl5/5.32.0
-export XML_CATALOG_FILES="/usr/local/etc/xml/catalog"
+export PYTHONHOME=/usr/local
 export SGML_CATALOG_FILES="/usr/local/etc/sgml/catalog"
-
-if mountpoint -q /usr/lib64; then sudo umount /usr/lib64; fi
-if mountpoint -q /usr/include; then sudo umount /usr/include; fi
-
-if [ -d /usr/local/tmp/newlib64 ]; then sudo rm -r /usr/local/tmp/newlib64; fi
-mkdir -p /usr/local/tmp/newlib64
-sudo cp -a /usr/lib64/* /usr/local/tmp/newlib64/
-#glibc location fix
-for f in /usr/local/lib64/*_nonshared.a; do
-file=\$(echo "\$f" | sed 's#/usr/local/lib64/##g')
-if [ ! -e "/usr/local/tmp/lib64/\$file" ]; then sudo ln -s -v "/usr/local/lib64/\$file" "/usr/local/tmp/newlib64/\$file"; fi
-done
-for f in /usr/local/lib64/*.o; do
-file=\$(echo "\$f" | sed 's#/usr/local/lib64/##g')
-if [ ! -e "/usr/local/tmp/lib64/\$file" ]; then sudo ln -s -v "/usr/local/lib64/\$file" "/usr/local/tmp/newlib64/\$file"; fi
-done
-sudo mount -o bind /usr/local/tmp/newlib64 /usr/lib64
-sudo mount -o bind /usr/local/include /usr/include
+export XML_CATALOG_FILES="/usr/local/etc/xml/catalog"
 TOOLCHAIN
 chmod 0755 /out/usr/local/bin/start-toolchain
 
