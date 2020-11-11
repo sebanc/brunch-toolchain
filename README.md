@@ -18,7 +18,7 @@ How is that different from Chromebrew ?
 Chromebrew is a package manager, you can create a toolchain with it by installing all the necessary packages but I needed to have one more adapted to my use.
 
 So that's all there is ?
-Not necessarily, this might be the first step to include more features in ChromeOS but we are not there yet...
+Not necessarily, the first project based on the brunch-toolchain is brioche: https://github.com/sebanc/brioche
 
 ## Install instructions
 
