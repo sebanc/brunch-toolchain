@@ -46,3 +46,7 @@ tar zxf <brunch_toolchain_archive> -C /usr/local
 start-toolchain
 ```
 
+If you want to execute `start-toolchain` automatically, you can run the below command:
+```
+echo "start-toolchain" >> ~/.bashrc
+```
