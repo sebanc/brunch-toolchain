@@ -41,7 +41,12 @@ sudo chown -R 1000:1000 /usr/local
 tar zxf <brunch_toolchain_archive> -C /usr/local
 ```
 
-4. After each reboot, before using the brunch toolchain run the below command:
+4. Run the installer script:
+```
+sh ./create_toolchain.sh
+```
+
+5. After each reboot, before using the brunch toolchain run the below command:
 ```
 start-toolchain
 ```
