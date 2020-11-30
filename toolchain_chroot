@@ -1,4 +1,5 @@
 #!/bin/bash
+export HOME=/home/chronos
 export PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 export LD_LIBRARY_PATH=/usr/local/lib64:/usr/local/lib:/usr/lib64:/usr/lib:/lib64:/lib
 export C_INCLUDE_PATH=/usr/local/include/ncurses
@@ -13,7 +14,7 @@ export LANGUAGE=en_US.UTF-8
 export LANG=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
 
-# glibc location fix
+# libc location fix
 for f in /usr/local/lib64/*_nonshared.a; do
 file=$(echo "$f" | sed 's#/usr/local/lib64/##g')
 if [ ! -e "/usr/lib64/$file" ]; then sudo ln -s -v "/usr/local/lib64/$file" "/usr/lib64/$file"; fi
@@ -125,6 +126,23 @@ make install
 make DESTDIR=/out install
 cd ..
 rm -rf ./perl
+read -p "Press any key to resume ..."
+
+fi
+
+if [ ! -z $build_all ] || [ ! -z $build_yaml ]; then
+
+mkdir -p ./yaml
+curl -L http://pyyaml.org/download/libyaml/yaml-0.2.1.tar.gz -o ./yaml.tar.gz
+tar zxf ./yaml.tar.gz -C ./yaml --strip 1
+rm ./yaml.tar.gz
+cd ./yaml
+./configure --prefix=/usr/local --libdir=/usr/local/lib64
+make -j$(($(nproc)-1))
+make install
+make DESTDIR=/out install
+cd ..
+rm -rf ./yaml
 read -p "Press any key to resume ..."
 
 fi
@@ -281,6 +299,24 @@ make install
 make DESTDIR=/out install
 cd ..
 rm -rf ./gzip
+read -p "Press any key to resume ..."
+
+fi
+
+if [ ! -z $build_all ] || [ ! -z $build_p7zip ]; then
+
+mkdir -p ./p7zip
+curl -L https://downloads.sourceforge.net/p7zip/p7zip_16.02_src_all.tar.bz2 -o ./p7zip.tar.bz2
+tar jxf ./p7zip.tar.bz2 -C ./p7zip --strip 1
+rm ./p7zip.tar.bz2
+cd ./p7zip
+curl -L http://www.linuxfromscratch.org/patches/blfs/svn/p7zip-16.02-consolidated_fixes-1.patch -o lfs.patch
+patch -p1 < lfs.patch
+make all3
+make DEST_HOME=/usr/local install
+make DEST_HOME=/out/usr/local install
+cd ..
+rm -rf ./p7zip
 read -p "Press any key to resume ..."
 
 fi
@@ -608,6 +644,108 @@ read -p "Press any key to resume ..."
 
 fi
 
+if [ ! -z $build_all ] || [ ! -z $build_make ]; then
+
+mkdir -p ./make
+curl https://ftp.gnu.org/gnu/make/make-4.3.tar.gz -o ./make.tar.gz
+tar zxf ./make.tar.gz -C ./make --strip 1
+rm ./make.tar.gz
+cd ./make
+./configure --prefix=/usr/local --libdir=/usr/local/lib64 --without-guile
+make -j$(($(nproc)-1))
+make DESTDIR=/out install
+cd ..
+rm -rf ./make
+read -p "Press any key to resume ..."
+
+fi
+
+if [ ! -z $build_all ] || [ ! -z $build_gcc ]; then
+
+mkdir -p ./gcc/out
+curl https://ftp.gnu.org/gnu/gcc/gcc-10.2.0/gcc-10.2.0.tar.gz -o ./gcc.tar.gz
+tar zxf ./gcc.tar.gz -C ./gcc --strip 1
+rm ./gcc.tar.gz
+cd ./gcc
+./contrib/download_prerequisites
+cd ./out
+../configure --prefix=/usr/local --libdir=/usr/local/lib64 --enable-languages=c,c++,d,fortran,go,objc,obj-c++ --with-glibc-version=2.27 --disable-multilib --disable-nls --disable-libssp --without-zstd
+make -j$(($(nproc)-1))
+make DESTDIR=/out install-strip
+ln -v -sf gcc /out/usr/local/bin/cc
+ln -v -sf cpp /out/usr/local/bin/x86_64-pc-linux-gnu-cpp
+cd ../..
+rm -rf ./gcc
+read -p "Press any key to resume ..."
+
+fi
+
+if [ ! -z $build_all ] || [ ! -z $build_binutils ]; then
+
+mkdir -p ./binutils/out
+curl https://ftp.gnu.org/gnu/binutils/binutils-2.35.tar.gz -o ./binutils.tar.gz
+tar zxf ./binutils.tar.gz -C ./binutils --strip 1
+rm ./binutils.tar.gz
+cd ./binutils/out
+../configure --prefix=/usr/local --libdir=/usr/local/lib64 --enable-gold --enable-gold=default --disable-nls --disable-libssp
+make -j$(($(nproc)-1))
+make DESTDIR=/out install-strip
+ln -v -sf ld /out/usr/local/bin/x86_64-pc-linux-gnu-ld
+ln -v -sf ld.bfd /out/usr/local/bin/x86_64-pc-linux-gnu-ld.bfd
+ln -v -sf ld.gold /out/usr/local/bin/x86_64-pc-linux-gnu-ld.gold
+cd ../..
+rm -rf ./binutils
+read -p "Press any key to resume ..."
+
+fi
+
+if [ ! -z $build_all ] || [ ! -z $build_linux_headers ]; then
+
+mkdir -p ./linux_headers
+curl https://chromium.googlesource.com/chromiumos/third_party/kernel/+archive/refs/heads/master.tar.gz -o ./chromiumos_kernel.tar.gz
+tar zxf ./chromiumos_kernel.tar.gz -C ./linux_headers
+rm ./chromiumos_kernel.tar.gz
+cd ./linux_headers
+make headers_install INSTALL_HDR_PATH=/out/usr/local
+cd ..
+rm -rf ./linux_headers
+read -p "Press any key to resume ..."
+
+fi
+
+if [ ! -z $build_all ] || [ ! -z $build_glibc ]; then
+
+mkdir -p ./glibc/out
+curl https://ftp.gnu.org/gnu/glibc/glibc-2.27.tar.gz -o ./glibc.tar.gz
+tar zxf ./glibc.tar.gz -C ./glibc --strip 1
+rm ./glibc.tar.gz
+curl https://dev.gentoo.org/~dilfridge/distfiles/glibc-2.27-patches-3.tar.bz2 -o ./glibc-patches.tar.gz
+tar xjf ./glibc-patches.tar.gz -C ./glibc
+rm ./glibc-patches.tar.gz
+cd ./glibc
+for glibc_patch in ./patches/*.patch
+do
+echo $glibc_patch
+patch -p1 --no-backup-if-mismatch -N < $glibc_patch
+done
+cd ./out
+../configure --prefix=/usr/local --libdir=/usr/local/lib64 --enable-kernel=3.2 --with-headers=/out/usr/local/include --without-selinux --disable-nls libc_cv_slibdir=/lib64 --disable-sanity-checks CFLAGS="-O2 -Wno-zero-length-bounds -Wno-maybe-uninitialized -Wno-error=missing-attributes -Wno-error=array-bounds"
+make -j$(($(nproc)-1))
+make DESTDIR=/out install
+rm -r /out/lib64
+cd ../..
+rm -rf ./glibc
+read -p "Press any key to resume ..."
+
+fi
+
+rm -rf /usr/local/*
+cp -r /out/usr/local/* /usr/local/
+rm -rf /out/*
+pip3 install --upgrade pip
+pip3 install meson ninja pyparsing cryptography
+read -p "Press any key to resume ..."
+
 if [ ! -z $build_all ] || [ ! -z $build_db ]; then
 
 mkdir -p ./db
@@ -618,7 +756,6 @@ cd ./db/build_unix
 ../dist/configure --prefix=/usr/local --libdir=/usr/local/lib64 --sysconfdir=/usr/local/etc --enable-compat185 --enable-dbm --disable-static
 make -j$(($(nproc)-1))
 make install
-make DESTDIR=/out install
 cd ../..
 rm -rf ./db
 read -p "Press any key to resume ..."
@@ -635,7 +772,6 @@ cd ./texinfo
 ./configure --prefix=/usr/local --libdir=/usr/local/lib64
 make -j$(($(nproc)-1))
 make install
-make DESTDIR=/out install
 cd ..
 rm -rf ./texinfo
 read -p "Press any key to resume ..."
@@ -645,16 +781,31 @@ fi
 if [ ! -z $build_all ] || [ ! -z $build_groff ]; then
 
 mkdir -p ./groff
-curl https://ftp.gnu.org/gnu/groff/groff-1.22.4.tar.gz -o ./groff.tar.gz
+curl -L https://ftp.gnu.org/gnu/groff/groff-1.22.4.tar.gz -o ./groff.tar.gz
 tar zxf ./groff.tar.gz -C ./groff --strip 1
 rm ./groff.tar.gz
 cd ./groff
 ./configure --prefix=/usr/local --libdir=/usr/local/lib64
 make -j$(($(nproc)-1))
 make install
-make DESTDIR=/out install
 cd ..
 rm -rf ./groff
+read -p "Press any key to resume ..."
+
+fi
+
+if [ ! -z $build_all ] || [ ! -z $build_inih ]; then
+
+mkdir -p ./inih
+curl -L https://github.com/benhoyt/inih/archive/r52.tar.gz -o ./inih.tar.gz
+tar zxf ./inih.tar.gz -C ./inih --strip 1
+rm ./inih.tar.gz
+cd ./inih
+meson --prefix="/usr/local" -Ddistro_install=true build/
+meson configure build/
+ninja -C build/ install
+cd ..
+rm -rf ./inih
 read -p "Press any key to resume ..."
 
 fi
@@ -669,7 +820,6 @@ cd ./man-db
 ./configure --prefix=/usr/local --libdir=/usr/local/lib64 --sysconfdir=/usr/local/etc --with-systemdsystemunitdir=/usr/local/lib --with-systemdtmpfilesdir=/usr/local/lib --with-db=db --disable-setuid
 make -j$(($(nproc)-1))
 make install
-make DESTDIR=/out install
 cd ..
 rm -rf ./man-db
 read -p "Press any key to resume ..."
@@ -686,7 +836,6 @@ cd ./help2man
 ./configure --prefix=/usr/local --libdir=/usr/local/lib64
 make -j$(($(nproc)-1))
 make install
-make DESTDIR=/out install
 cd ..
 rm -rf ./help2man
 read -p "Press any key to resume ..."
@@ -705,7 +854,6 @@ cd ./libtasn1
 ./configure --prefix=/usr/local --libdir=/usr/local/lib64
 make -j$(($(nproc)-1))
 make install
-make DESTDIR=/out install
 cd ..
 rm -rf ./libtasn1
 read -p "Press any key to resume ..."
@@ -722,9 +870,7 @@ cd ./tcl/unix
 ./configure --prefix=/usr/local --libdir=/usr/local/lib64
 make -j$(($(nproc)-1))
 make install
-make DESTDIR=/out install
 make install-private-headers
-make DESTDIR=/out install-private-headers
 cd ../..
 rm -rf ./tcl
 read -p "Press any key to resume ..."
@@ -741,7 +887,6 @@ cd ./expect
 ./configure --prefix=/usr/local --libdir=/usr/local/lib64 --with-tcl=/usr/local/lib64
 make -j$(($(nproc)-1))
 make install
-make DESTDIR=/out install
 cd ..
 rm -rf ./expect
 read -p "Press any key to resume ..."
@@ -767,12 +912,6 @@ ICMAKE
 ./icm_prepare /
 ./icm_bootstrap x
 ./icm_install all
-rm -rf ./tmp
-./icm_prepare /out
-./icm_bootstrap x
-ln -s . /out/out
-./icm_install all
-rm /out/out
 cd ../..
 rm -rf ./icmake
 read -p "Press any key to resume ..."
@@ -797,9 +936,6 @@ CXXFLAGS="-fpermissive --std=c++17" ./build man
 ./build install programs /
 ./build install macros /
 ./build install man /
-./build install programs /out
-./build install macros /out
-./build install man /out
 cd ../..
 rm -rf ./yodl
 read -p "Press any key to resume ..."
@@ -817,7 +953,6 @@ autoconf
 ./configure --prefix=/usr/local --libdir=/usr/local/lib64
 make -j$(($(nproc)-1))
 make install
-make DESTDIR=/out install
 cd ..
 rm -rf ./socat
 read -p "Press any key to resume ..."
@@ -833,7 +968,6 @@ rm ./libcap.tar.gz
 cd ./libcap
 make -j$(($(nproc)-1))
 make prefix=/usr/local lib=lib64 install
-make DESTDIR=/out prefix=/usr/local lib=lib64 install
 cd ..
 rm -rf ./libcap
 read -p "Press any key to resume ..."
@@ -850,7 +984,6 @@ cd libgmp
 ./configure --prefix=/usr/local --libdir=/usr/local/lib64 --build=x86_64-unknown-linux-gnu
 make -j$(($(nproc)-1))
 make install
-make DESTDIR=/out install
 cd ..
 rm -rf ./libgmp
 read -p "Press any key to resume ..."
@@ -867,7 +1000,6 @@ cd ./nettle
 ./configure --prefix=/usr/local --libdir=/usr/local/lib64 --sysconfdir=/usr/local/etc
 make -j$(($(nproc)-1))
 make install
-make DESTDIR=/out install
 cd ..
 rm -rf ./nettle
 read -p "Press any key to resume ..."
@@ -884,7 +1016,6 @@ cd ./gnutls
 ./configure --prefix=/usr/local --libdir=/usr/local/lib64 --sysconfdir=/usr/local/etc --with-included-libtasn1 --without-p11-kit
 make -j$(($(nproc)-1))
 make install
-make DESTDIR=/out install
 cd ..
 rm -rf ./gnutls
 read -p "Press any key to resume ..."
@@ -901,7 +1032,6 @@ cd ./npth
 ./configure --prefix=/usr/local --libdir=/usr/local/lib64 --sysconfdir=/usr/local/etc
 make -j$(($(nproc)-1))
 make install
-make DESTDIR=/out install
 cd ..
 rm -rf ./npth
 read -p "Press any key to resume ..."
@@ -918,7 +1048,6 @@ cd ./libgpg-error
 ./configure --prefix=/usr/local --libdir=/usr/local/lib64 --sysconfdir=/usr/local/etc
 make -j$(($(nproc)-1))
 make install
-make DESTDIR=/out install
 cd ..
 rm -rf ./libgpg-error
 read -p "Press any key to resume ..."
@@ -935,7 +1064,6 @@ cd ./libgcrypt
 ./configure --prefix=/usr/local --libdir=/usr/local/lib64 --sysconfdir=/usr/local/etc
 make -j$(($(nproc)-1))
 make install
-make DESTDIR=/out install
 cd ..
 rm -rf ./libgcrypt
 read -p "Press any key to resume ..."
@@ -952,7 +1080,6 @@ cd ./libksba
 ./configure --prefix=/usr/local --libdir=/usr/local/lib64 --sysconfdir=/usr/local/etc
 make -j$(($(nproc)-1))
 make install
-make DESTDIR=/out install
 cd ..
 rm -rf ./libksba
 read -p "Press any key to resume ..."
@@ -969,7 +1096,6 @@ cd ./libassuan
 ./configure --prefix=/usr/local --libdir=/usr/local/lib64 --sysconfdir=/usr/local/etc
 make -j$(($(nproc)-1))
 make install
-make DESTDIR=/out install
 cd ..
 rm -rf ./libassuan
 read -p "Press any key to resume ..."
@@ -986,7 +1112,6 @@ cd ./pinentry
 ./configure --prefix=/usr/local --libdir=/usr/local/lib64 --sysconfdir=/usr/local/etc
 make -j$(($(nproc)-1))
 make install
-make DESTDIR=/out install
 cd ..
 rm -rf ./pinentry
 read -p "Press any key to resume ..."
@@ -1003,7 +1128,6 @@ cd ./gnupg
 ./configure --prefix=/usr/local --libdir=/usr/local/lib64 --sysconfdir=/usr/local/etc
 make -j$(($(nproc)-1))
 make install
-make DESTDIR=/out install
 cd ..
 rm -rf ./gnupg
 read -p "Press any key to resume ..."
@@ -1020,7 +1144,6 @@ cd ./wget
 ./configure --prefix=/usr/local --libdir=/usr/local/lib64 --sysconfdir=/usr/local/etc
 make -j$(($(nproc)-1))
 make install
-make DESTDIR=/out install
 cd ..
 rm -rf ./wget
 read -p "Press any key to resume ..."
@@ -1037,7 +1160,6 @@ cd ./curl
 ./configure --prefix=/usr/local --libdir=/usr/local/lib64
 make -j$(($(nproc)-1))
 make install
-make DESTDIR=/out install
 cd ..
 rm -rf ./curl
 read -p "Press any key to resume ..."
@@ -1054,7 +1176,6 @@ cd ./git
 ./configure --prefix=/usr/local --libdir=/usr/local/lib64
 make -j$(($(nproc)-1))
 make install
-make DESTDIR=/out install
 cd ..
 rm -rf ./git
 read -p "Press any key to resume ..."
@@ -1109,11 +1230,8 @@ EOF
 ./configure --prefix=/usr/local --libdir=/usr/local/lib64 --disable-selinux --with-init-script=none
 make -j$(($(nproc)-1))
 make install
-make DESTDIR=/out install
 rm -r /usr/local/var/lib/lxc
 ln -s /home/root/brioche /usr/local/var/lib/lxc
-rm -r /out/usr/local/var/lib/lxc
-ln -s /home/root/brioche /out/usr/local/var/lib/lxc
 cd ..
 rm -rf ./lxc
 read -p "Press any key to resume ..."
@@ -1130,7 +1248,6 @@ cd ./libxml2
 ./configure --prefix=/usr/local --libdir=/usr/local/lib64 --with-python=/usr/bin/python3
 make -j$(($(nproc)-1))
 make install
-make DESTDIR=/out install
 cd ..
 rm -rf ./libxml2
 read -p "Press any key to resume ..."
@@ -1150,15 +1267,12 @@ autoreconf -f -i
 ./configure --prefix=/usr/local --libdir=/usr/local/lib64 --sysconfdir=/usr/local/etc
 make -j$(($(nproc)-1))
 make install
-make DESTDIR=/out install
 sed -i "s#/etc/#/usr/local/etc/#g" /usr/local/bin/install-catalog
 cat >/usr/local/etc/sgml/sgml.conf <<SGMLCONF
 # /etc/sgml/sgml.conf conformant with LSB
 SGML_BASE_DIR=/usr/local/share/sgml
 SGML_CATALOGS_DIR=/usr/local/etc/sgml
 SGMLCONF
-cp /usr/local/bin/install-catalog /out/usr/local/bin/install-catalog
-cp /usr/local/etc/sgml/sgml.conf /out/usr/local/etc/sgml/sgml.conf
 install-catalog --add /usr/local/etc/sgml/sgml-ent.cat /usr/local/share/sgml/sgml-iso-entities-8879.1986/catalog
 install-catalog --add /usr/local/etc/sgml/sgml-docbook.cat /usr/local/etc/sgml/sgml-ent.cat
 cd ..
@@ -1388,11 +1502,6 @@ xmlcatalog --noout --add "rewriteSystem" "http://docbook.sourceforge.net/release
 xmlcatalog --noout --add "rewriteURI" "http://docbook.sourceforge.net/release/xsl/current" "/usr/local/share/xml/docbook/xsl-stylesheets-nons-1.79.2" /usr/local/etc/xml/catalog
 cd ..
 rm -rf ./docbook-xsl-nons
-mkdir -p /out/usr/local/etc/sgml /out/usr/local/etc/xml /out/usr/local/share/sgml /out/usr/local/share/xml
-cp -r /usr/local/etc/sgml/* /out/usr/local/etc/sgml/
-cp -r /usr/local/etc/xml/* /out/usr/local/etc/xml/
-cp -r /usr/local/share/sgml/* /out/usr/local/share/sgml/
-cp -r /usr/local/share/xml/* /out/usr/local/share/xml/
 read -p "Press any key to resume ..."
 
 fi
@@ -1408,7 +1517,6 @@ sed -e 's@http://cdn.docbook.org/release/xsl@https://cdn.docbook.org/release/xsl
 ./configure --prefix=/usr/local --libdir=/usr/local/lib64 --without-python
 make -j$(($(nproc)-1))
 make install
-make DESTDIR=/out install
 cd ..
 rm -rf ./libxslt
 read -p "Press any key to resume ..."
@@ -1425,7 +1533,6 @@ cd ./itstool
 ./configure --prefix=/usr/local
 make -j$(($(nproc)-1))
 make install
-make DESTDIR=/out install
 cd ..
 rm -rf ./itstool
 read -p "Press any key to resume ..."
@@ -1442,7 +1549,6 @@ cd ./xmlto
 ./configure --prefix=/usr/local --libdir=/usr/local/lib64
 make -j$(($(nproc)-1))
 make install
-make DESTDIR=/out install
 cd ..
 rm -rf ./xmlto
 read -p "Press any key to resume ..."
@@ -1459,109 +1565,61 @@ cd man
 make -j$(($(nproc)-1))
 cd ..
 make install
-make DESTDIR=/out install
 cd ..
 rm -rf ./pax-utils
 read -p "Press any key to resume ..."
 
 fi
 
-if [ ! -z $build_all ] || [ ! -z $build_make ]; then
+if [ ! -z $build_all ] || [ ! -z $build_cmake ]; then
 
-mkdir -p ./make
-curl https://ftp.gnu.org/gnu/make/make-4.3.tar.gz -o ./make.tar.gz
-tar zxf ./make.tar.gz -C ./make --strip 1
-rm ./make.tar.gz
-cd ./make
-./configure --prefix=/usr/local --libdir=/usr/local/lib64 --without-guile
-make -j$(($(nproc)-1))
-make DESTDIR=/out install
+mkdir -p ./cmake
+curl -L https://github.com/Kitware/CMake/archive/v3.19.1.tar.gz -o ./cmake.tar.gz
+tar zxf ./cmake.tar.gz -C ./cmake --strip 1
+rm ./cmake.tar.gz
+cd ./cmake
+./bootstrap --prefix=/usr/local
+make
+make install
 cd ..
-rm -rf ./make
+rm -rf ./cmake
 read -p "Press any key to resume ..."
 
 fi
 
-if [ ! -z $build_all ] || [ ! -z $build_gcc ]; then
+if [ ! -z $build_all ] || [ ! -z $build_libjpeg ]; then
 
-mkdir -p ./gcc/out
-curl https://ftp.gnu.org/gnu/gcc/gcc-10.2.0/gcc-10.2.0.tar.gz -o ./gcc.tar.gz
-tar zxf ./gcc.tar.gz -C ./gcc --strip 1
-rm ./gcc.tar.gz
-cd ./gcc
-./contrib/download_prerequisites
-cd ./out
-../configure --prefix=/usr/local --libdir=/usr/local/lib64 --enable-languages=c,c++,d,fortran,go,objc,obj-c++ --with-glibc-version=2.27 --disable-multilib --disable-nls --disable-libssp --without-zstd
-make -j$(($(nproc)-1))
-make DESTDIR=/out install-strip
-ln -v -sf gcc /out/usr/local/bin/cc
-ln -v -sf cpp /out/usr/local/bin/x86_64-pc-linux-gnu-cpp
+mkdir -p ./libjpeg/build
+curl -L https://github.com/libjpeg-turbo/libjpeg-turbo/archive/2.0.90.tar.gz -o ./libjpeg.tar.gz
+tar zxf ./libjpeg.tar.gz -C ./libjpeg --strip 1
+rm ./libjpeg.tar.gz
+cd ./libjpeg/build
+cmake -G"Unix Makefiles" -DCMAKE_INSTALL_PREFIX:PATH=/usr/local -DCMAKE_INSTALL_LIBDIR:PATH=lib64 ..
+make
+make install
 cd ../..
-rm -rf ./gcc
+rm -rf ./libjpeg
 read -p "Press any key to resume ..."
 
 fi
 
-if [ ! -z $build_all ] || [ ! -z $build_binutils ]; then
+if [ ! -z $build_all ] || [ ! -z $build_libpng ]; then
 
-mkdir -p ./binutils/out
-curl https://ftp.gnu.org/gnu/binutils/binutils-2.35.tar.gz -o ./binutils.tar.gz
-tar zxf ./binutils.tar.gz -C ./binutils --strip 1
-rm ./binutils.tar.gz
-cd ./binutils/out
-../configure --prefix=/usr/local --libdir=/usr/local/lib64 --enable-gold --enable-gold=default --disable-nls --disable-libssp
+mkdir -p ./libpng
+curl -L https://github.com/glennrp/libpng/archive/v1.6.35.tar.gz -o ./libpng.tar.gz
+tar zxf ./libpng.tar.gz -C ./libpng --strip 1
+rm ./libpng.tar.gz
+cd ./libpng
+./configure --prefix=/usr/local --libdir=/usr/local/lib64
 make -j$(($(nproc)-1))
-make DESTDIR=/out install-strip
-ln -v -sf ld /out/usr/local/bin/x86_64-pc-linux-gnu-ld
-ln -v -sf ld.bfd /out/usr/local/bin/x86_64-pc-linux-gnu-ld.bfd
-ln -v -sf ld.gold /out/usr/local/bin/x86_64-pc-linux-gnu-ld.gold
-cd ../..
-rm -rf ./binutils
-read -p "Press any key to resume ..."
-
-fi
-
-if [ ! -z $build_all ] || [ ! -z $build_linux_headers ]; then
-
-mkdir -p ./linux_headers
-curl https://chromium.googlesource.com/chromiumos/third_party/kernel/+archive/refs/heads/master.tar.gz -o ./chromiumos_kernel.tar.gz
-tar zxf ./chromiumos_kernel.tar.gz -C ./linux_headers
-rm ./chromiumos_kernel.tar.gz
-cd ./linux_headers
-make headers_install INSTALL_HDR_PATH=/out/usr/local
+make install
 cd ..
-rm -rf ./linux_headers
+rm -rf ./libpng
 read -p "Press any key to resume ..."
 
 fi
 
-if [ ! -z $build_all ] || [ ! -z $build_glibc ]; then
-
-mkdir -p ./glibc/out
-curl https://ftp.gnu.org/gnu/glibc/glibc-2.27.tar.gz -o ./glibc.tar.gz
-tar zxf ./glibc.tar.gz -C ./glibc --strip 1
-rm ./glibc.tar.gz
-curl https://dev.gentoo.org/~dilfridge/distfiles/glibc-2.27-patches-3.tar.bz2 -o ./glibc-patches.tar.gz
-tar xjf ./glibc-patches.tar.gz -C ./glibc
-rm ./glibc-patches.tar.gz
-cd ./glibc
-for glibc_patch in ./patches/*.patch
-do
-echo $glibc_patch
-patch -p1 --no-backup-if-mismatch -N < $glibc_patch
-done
-cd ./out
-../configure --prefix=/usr/local --libdir=/usr/local/lib64 --enable-kernel=3.2 --with-headers=/out/usr/local/include --without-selinux --disable-nls libc_cv_slibdir=/lib64 --disable-sanity-checks CFLAGS="-O2 -Wno-zero-length-bounds -Wno-maybe-uninitialized -Wno-error=missing-attributes -Wno-error=array-bounds"
-make -j$(($(nproc)-1))
-make DESTDIR=/out install
-rm -r /out/lib64
-cd ..
-rm -rf ./glibc
-read -p "Press any key to resume ..."
-
-fi
-
-cat >/out/usr/local/bin/start-toolchain <<TOOLCHAIN
+cat >/usr/local/bin/start-toolchain <<TOOLCHAIN
 export C_INCLUDE_PATH=/usr/local/include/ncurses
 export GCONV_PATH=/usr/local/lib64/gconv
 export LD_LIBRARY_PATH=/usr/local/lib64:/usr/local/lib:/usr/lib64:/usr/lib:/lib64:/lib
@@ -1572,9 +1630,8 @@ export PYTHONHOME=/usr/local
 export SGML_CATALOG_FILES="/usr/local/etc/sgml/catalog"
 export XML_CATALOG_FILES="/usr/local/etc/xml/catalog"
 TOOLCHAIN
-chmod 0755 /out/usr/local/bin/start-toolchain
+chmod 0755 /usr/local/bin/start-toolchain
 
-cd /out/usr/local
+cd /usr/local
 tar zcvf /out/brunch_toolchain.tar.gz * --owner=0 --group=0
-rm -rf /out/usr
 

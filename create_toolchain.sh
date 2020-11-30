@@ -1,9 +1,10 @@
 #!/bin/bash
-mkdir -p ./bootstrap/usr/local
 
 BUILDPATH=$(dirname $(realpath "$0"))
 
 build_all=1
+
+mkdir -p ./bootstrap/usr/local
 
 if [ ! -z $build_all ] || [ ! -z $build_gcc ]; then
 
