@@ -1619,6 +1619,22 @@ read -p "Press any key to resume ..."
 
 fi
 
+if [ ! -z $build_all ] || [ ! -z $build_imagemagick ]; then
+
+mkdir -p ./imagemagick
+curl -L https://github.com/ImageMagick/ImageMagick/archive/7.0.10-45.tar.gz -o imagemagick.tar.gz
+tar zxf ./imagemagick.tar.gz -C ./imagemagick --strip 1
+rm ./imagemagick.tar.gz
+cd ./imagemagick
+./configure --prefix=/usr/local --libdir=/usr/local/lib64 --without-x
+make -j$(($(nproc)-1))
+make install
+cd ..
+rm -rf ./imagemagick
+read -p "Press any key to resume ..."
+
+fi
+
 cat >/usr/local/bin/start-toolchain <<TOOLCHAIN
 export C_INCLUDE_PATH=/usr/local/include/ncurses
 export GCONV_PATH=/usr/local/lib64/gconv
