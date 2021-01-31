@@ -46,7 +46,7 @@ sudo chown -R 1000:1000 /usr/local
 ```
 tar zxf <brunch_toolchain_archive> -C /usr/local
 ```
-4. Recover the Crouton installation **(if installed previously)**
+4. Recover the Crouton installation (if installed previously)
 ```shell
 sudo install -Dt /usr/local/bin -m 755 ~/tmp/* && sudo rm -rf ~/tmp
 sudo ln -s /mnt/stateful_partition/crouton/chroots /usr/local/
