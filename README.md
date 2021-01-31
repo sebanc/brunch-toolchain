@@ -44,7 +44,7 @@ sudo chown -R 1000:1000 /usr/local
 
 3. Download the brunch toolchain release and extract it in /usr/local:
 ```
-tar zxf <brunch_toolchain_archive> -C /usr/local
+tar zxf ~/Downloads/brunch_toolchain_* -C /usr/local
 ```
 4. Recover the Crouton installation (if installed previously)
 ```shell
