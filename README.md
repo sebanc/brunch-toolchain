@@ -48,6 +48,7 @@ tar zxf ~/Downloads/brunch_toolchain_* -C /usr/local
 ```
 4. Recover the Crouton installation (if installed previously)
 ```shell
+curl -Ls https://goo.gl/fd3zc -o /usr/local/bin/crouton && chmod +x /usr/local/bin/crouton
 sudo install -Dt /usr/local/bin -m 755 ~/tmp/* && sudo rm -rf ~/tmp
 sudo ln -s /mnt/stateful_partition/crouton/chroots /usr/local/
 ```
