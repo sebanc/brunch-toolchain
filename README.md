@@ -24,11 +24,18 @@ Not necessarily, the first project based on the brunch-toolchain is brioche: htt
 
 The toolchain has to be installed to /usr/local (which is actually on the data partition) and takes about 2GB of space.
 
-**Warning: The below commands will remove any previous Chromebrew or Crouton installation, Crouton can be reinstalled afterwards but you cannot have both Chromebrew and the Brunch toolchain installed.**
+**Warning: The below commands will remove any previous Chromebrew installation and you cannot have both Chromebrew and the Brunch toolchain installed.**
 
-1. Remove all data from /usr/local directory:
+If you have Crouton installed , execute the following first:
+```shell
+mkdir ~/tmp
+sudo cp /usr/local/bin/start* ~/tmp
+sudo cp /usr/local/bin/enter-chroot ~/tmp
 ```
-sudo rm -r /usr/local/*
+1. Remove all existing command in `~/.bashrc` and data from `/usr/local` directory:
+```
+sudo sed -i '1,/# Put your fun stuff here./!d' ~/.bashrc 
+sudo rm -rf /usr/local/*
 ```
 
 2. Ensure that /usr/local is owned by chronos user:
@@ -38,10 +45,16 @@ sudo chown -R 1000:1000 /usr/local
 
 3. Download the brunch toolchain release and extract it in /usr/local:
 ```
-tar zxf <brunch_toolchain_archive> -C /usr/local
+tar zxf ~/Downloads/brunch_toolchain_* -C /usr/local
+```
+4. Recover the Crouton installation (if installed previously)
+```shell
+curl -Ls https://goo.gl/fd3zc -o /usr/local/bin/crouton && chmod +x /usr/local/bin/crouton
+sudo install -Dt /usr/local/bin -m 755 ~/tmp/* && sudo rm -rf ~/tmp
+sudo ln -s /mnt/stateful_partition/crouton/chroots /usr/local/
 ```
 
-4. After each reboot, before using the brunch toolchain run the below command:
+5. After each reboot, before using the brunch toolchain run the below command:
 ```
 start-toolchain
 ```
