@@ -32,8 +32,9 @@ mkdir ~/tmp
 sudo cp /usr/local/bin/start* ~/tmp
 sudo cp /usr/local/bin/enter-chroot ~/tmp
 ```
-1. Remove all data from /usr/local directory:
+1. Remove all existing command in `~/.bashrc` and data from `/usr/local` directory:
 ```
+sudo sed -i '1,/# Put your fun stuff here./!d' ~/.bashrc 
 sudo rm -rf /usr/local/*
 ```
 
