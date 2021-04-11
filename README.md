@@ -41,12 +41,12 @@ sudo chown -R 1000:1000 /usr/local
 tar zxf <brunch_toolchain_archive> -C /usr/local
 ```
 
-4. After each reboot, before using the brunch toolchain run the below command:
+4. After each reboot, if you want to build something from source or use python, run the below command in crosh shell first:
 ```
-start-toolchain
+source /usr/local/bin/start-toolchain
 ```
 
-If you want to execute `start-toolchain` automatically, you can run the below command:
+If you want to have it executed automatically, you can run the below command:
 ```
-echo "start-toolchain" >> ~/.bashrc
+echo "source /usr/local/bin/start-toolchain" >> ~/.bashrc
 ```
