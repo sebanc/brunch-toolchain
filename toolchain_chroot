@@ -31,7 +31,7 @@ build_all=1
 if [ ! -z $build_all ] || [ ! -z $build_diffutils ]; then
 
 mkdir -p ./diffutils
-curl https://ftp.gnu.org/gnu/diffutils/diffutils-3.7.tar.xz -o ./diffutils.tar.xz
+curl -L https://ftp.gnu.org/gnu/diffutils/diffutils-3.7.tar.xz -o ./diffutils.tar.xz
 tar xf ./diffutils.tar.xz -C ./diffutils --strip 1
 rm ./diffutils.tar.xz
 cd ./diffutils
@@ -48,7 +48,7 @@ fi
 if [ ! -z $build_all ] || [ ! -z $build_patch ]; then
 
 mkdir -p ./patch
-curl https://ftp.gnu.org/gnu/patch/patch-2.7.6.tar.gz -o ./patch.tar.gz
+curl -L https://ftp.gnu.org/gnu/patch/patch-2.7.6.tar.gz -o ./patch.tar.gz
 tar zxf ./patch.tar.gz -C ./patch --strip 1
 rm ./patch.tar.gz
 cd ./patch
@@ -65,7 +65,7 @@ fi
 if [ ! -z $build_all ] || [ ! -z $build_gawk ]; then
 
 mkdir -p ./gawk
-curl https://ftp.gnu.org/gnu/gawk/gawk-5.1.0.tar.gz -o ./gawk.tar.gz
+curl -L https://ftp.gnu.org/gnu/gawk/gawk-5.1.0.tar.gz -o ./gawk.tar.gz
 tar zxf ./gawk.tar.gz -C ./gawk --strip 1
 rm ./gawk.tar.gz
 cd ./gawk
@@ -82,7 +82,7 @@ fi
 if [ ! -z $build_all ] || [ ! -z $build_sed ]; then
 
 mkdir -p ./sed
-curl https://ftp.gnu.org/gnu/sed/sed-4.8.tar.gz -o ./sed.tar.gz
+curl -L https://ftp.gnu.org/gnu/sed/sed-4.8.tar.gz -o ./sed.tar.gz
 tar zxf ./sed.tar.gz -C ./sed --strip 1
 rm ./sed.tar.gz
 cd ./sed
@@ -99,7 +99,7 @@ fi
 if [ ! -z $build_all ] || [ ! -z $build_libressl ]; then
 
 mkdir -p ./libressl
-curl https://ftp.openbsd.org/pub/OpenBSD/LibreSSL/libressl-3.2.1.tar.gz -o ./libressl.tar.gz
+curl -L https://ftp.openbsd.org/pub/OpenBSD/LibreSSL/libressl-3.2.1.tar.gz -o ./libressl.tar.gz
 tar zxf ./libressl.tar.gz -C ./libressl --strip 1
 rm ./libressl.tar.gz
 cd ./libressl
@@ -116,7 +116,7 @@ fi
 if [ ! -z $build_all ] || [ ! -z $build_perl ]; then
 
 mkdir -p ./perl
-curl https://www.cpan.org/src/5.0/perl-5.32.0.tar.gz -o ./perl.tar.gz
+curl -L https://www.cpan.org/src/5.0/perl-5.32.0.tar.gz -o ./perl.tar.gz
 tar zxf ./perl.tar.gz -C ./perl --strip 1
 rm ./perl.tar.gz
 cd ./perl
@@ -150,7 +150,7 @@ fi
 if [ ! -z $build_all ] || [ ! -z $build_m4 ]; then
 
 mkdir -p ./m4
-curl https://ftp.gnu.org/gnu/m4/m4-1.4.18.tar.gz -o ./m4.tar.gz
+curl -L https://ftp.gnu.org/gnu/m4/m4-1.4.18.tar.gz -o ./m4.tar.gz
 tar zxf ./m4.tar.gz -C ./m4 --strip 1
 rm ./m4.tar.gz
 cd ./m4
@@ -169,7 +169,7 @@ fi
 if [ ! -z $build_all ] || [ ! -z $build_autoconf ]; then
 
 mkdir -p ./autoconf
-curl https://ftp.gnu.org/gnu/autoconf/autoconf-2.69.tar.gz -o ./autoconf.tar.gz
+curl -L https://ftp.gnu.org/gnu/autoconf/autoconf-2.69.tar.gz -o ./autoconf.tar.gz
 tar zxf ./autoconf.tar.gz -C ./autoconf --strip 1
 rm ./autoconf.tar.gz
 cd ./autoconf
@@ -186,7 +186,7 @@ fi
 if [ ! -z $build_all ] || [ ! -z $build_autoconf_archive ]; then
 
 mkdir -p ./autoconf-archive
-curl https://ftp.gnu.org/gnu/autoconf-archive/autoconf-archive-2019.01.06.tar.xz -o ./autoconf-archive.tar.xz
+curl -L https://ftp.gnu.org/gnu/autoconf-archive/autoconf-archive-2019.01.06.tar.xz -o ./autoconf-archive.tar.xz
 tar xf ./autoconf-archive.tar.xz -C ./autoconf-archive --strip 1
 rm ./autoconf-archive.tar.xz
 cd ./autoconf-archive
@@ -203,7 +203,7 @@ fi
 if [ ! -z $build_all ] || [ ! -z $build_automake ]; then
 
 mkdir -p ./automake
-curl https://ftp.gnu.org/gnu/automake/automake-1.16.tar.gz -o ./automake.tar.gz
+curl -L https://ftp.gnu.org/gnu/automake/automake-1.16.tar.gz -o ./automake.tar.gz
 tar zxf ./automake.tar.gz -C ./automake --strip 1
 rm ./automake.tar.gz
 cd ./automake
@@ -220,7 +220,7 @@ fi
 if [ ! -z $build_all ] || [ ! -z $build_libtool ]; then
 
 mkdir -p ./libtool
-curl https://mirror.cyberbits.eu/gnu/libtool/libtool-2.4.6.tar.gz -o ./libtool.tar.gz
+curl -L https://mirror.cyberbits.eu/gnu/libtool/libtool-2.4.6.tar.gz -o ./libtool.tar.gz
 tar zxf ./libtool.tar.gz -C ./libtool --strip 1
 rm ./libtool.tar.gz
 cd ./libtool
@@ -237,10 +237,11 @@ fi
 if [ ! -z $build_all ] || [ ! -z $build_bzip2 ]; then
 
 mkdir -p ./bzip2
-curl https://sourceware.org/pub/bzip2/bzip2-1.0.8.tar.gz -o ./bzip2.tar.gz
+curl -L https://sourceware.org/pub/bzip2/bzip2-1.0.8.tar.gz -o ./bzip2.tar.gz
 tar zxf ./bzip2.tar.gz -C ./bzip2 --strip 1
 rm ./bzip2.tar.gz
 cd ./bzip2
+sed -i 's@\(ln -s -f \)$(PREFIX)/bin/@\1@' Makefile
 sed -i "s#\$(PREFIX)/lib#\$(PREFIX)/lib64#g" Makefile
 make -j$(($(nproc)-1)) -f Makefile-libbz2_so
 make -j$(($(nproc)-1))
@@ -289,7 +290,7 @@ fi
 if [ ! -z $build_all ] || [ ! -z $build_gzip ]; then
 
 mkdir -p ./gzip
-curl https://ftp.gnu.org/gnu/gzip/gzip-1.10.tar.gz -o ./gzip.tar.gz
+curl -L https://ftp.gnu.org/gnu/gzip/gzip-1.10.tar.gz -o ./gzip.tar.gz
 tar zxf ./gzip.tar.gz -C ./gzip --strip 1
 rm ./gzip.tar.gz
 cd ./gzip
@@ -306,12 +307,11 @@ fi
 if [ ! -z $build_all ] || [ ! -z $build_p7zip ]; then
 
 mkdir -p ./p7zip
-curl -L https://downloads.sourceforge.net/p7zip/p7zip_16.02_src_all.tar.bz2 -o ./p7zip.tar.bz2
-tar jxf ./p7zip.tar.bz2 -C ./p7zip --strip 1
-rm ./p7zip.tar.bz2
+curl -L https://github.com/jinfeihan57/p7zip/archive/v17.03/p7zip-17.03.tar.gz -o ./p7zip.tar.gz
+tar zxf ./p7zip.tar.gz -C ./p7zip --strip 1
+rm ./p7zip.tar.gz
 cd ./p7zip
-curl -L http://www.linuxfromscratch.org/patches/blfs/svn/p7zip-16.02-consolidated_fixes-1.patch -o lfs.patch
-patch -p1 < lfs.patch
+sed -i '160a if(_buffer == nullptr || _size == _pos) return E_FAIL;' CPP/7zip/Common/StreamObjects.cpp
 make all3
 make DEST_HOME=/usr/local install
 make DEST_HOME=/out/usr/local install
@@ -423,7 +423,7 @@ fi
 if [ ! -z $build_all ] || [ ! -z $build_libunistring ]; then
 
 mkdir -p ./libunistring
-curl https://ftp.gnu.org/gnu/libunistring/libunistring-0.9.10.tar.gz -o ./libunistring.tar.gz
+curl -L https://ftp.gnu.org/gnu/libunistring/libunistring-0.9.10.tar.gz -o ./libunistring.tar.gz
 tar zxf ./libunistring.tar.gz -C ./libunistring --strip 1
 rm ./libunistring.tar.gz
 cd ./libunistring
@@ -474,7 +474,7 @@ fi
 if [ ! -z $build_all ] || [ ! -z $build_libidn2 ]; then
 
 mkdir -p ./libidn2
-curl https://ftp.gnu.org/gnu/libidn/libidn2-2.3.0.tar.gz -o ./libidn2.tar.gz
+curl -L https://ftp.gnu.org/gnu/libidn/libidn2-2.3.0.tar.gz -o ./libidn2.tar.gz
 tar zxf ./libidn2.tar.gz -C ./libidn2 --strip 1
 rm ./libidn2.tar.gz
 cd ./libidn2
@@ -508,7 +508,7 @@ fi
 if [ ! -z $build_all ] || [ ! -z $build_ncurses ]; then
 
 mkdir -p ./ncurses
-curl https://ftp.gnu.org/pub/gnu/ncurses/ncurses-6.2.tar.gz -o ./ncurses.tar.gz
+curl -L https://ftp.gnu.org/pub/gnu/ncurses/ncurses-6.2.tar.gz -o ./ncurses.tar.gz
 tar zxf ./ncurses.tar.gz -C ./ncurses --strip 1
 rm ./ncurses.tar.gz
 cd ./ncurses
@@ -525,7 +525,7 @@ fi
 if [ ! -z $build_all ] || [ ! -z $build_readline ]; then
 
 mkdir -p ./readline
-curl https://ftp.gnu.org/gnu/readline/readline-8.0.tar.gz -o ./readline.tar.gz
+curl -L https://ftp.gnu.org/gnu/readline/readline-8.0.tar.gz -o ./readline.tar.gz
 tar zxf ./readline.tar.gz -C ./readline --strip 1
 rm ./readline.tar.gz
 cd ./readline
@@ -559,7 +559,7 @@ fi
 if [ ! -z $build_all ] || [ ! -z $build_bison ]; then
 
 mkdir -p ./bison
-curl https://ftp.gnu.org/gnu/bison/bison-3.7.tar.gz -o ./bison.tar.gz
+curl -L https://ftp.gnu.org/gnu/bison/bison-3.7.tar.gz -o ./bison.tar.gz
 tar zxf ./bison.tar.gz -C ./bison --strip 1
 rm ./bison.tar.gz
 cd ./bison
@@ -576,7 +576,7 @@ fi
 if [ ! -z $build_all ] || [ ! -z $build_gettext ]; then
 
 mkdir -p ./gettext
-curl https://ftp.gnu.org/pub/gnu/gettext/gettext-0.21.tar.gz -o ./gettext.tar.gz
+curl -L https://ftp.gnu.org/pub/gnu/gettext/gettext-0.21.tar.gz -o ./gettext.tar.gz
 tar zxf ./gettext.tar.gz -C ./gettext --strip 1
 rm ./gettext.tar.gz
 cd ./gettext
@@ -593,7 +593,7 @@ fi
 if [ ! -z $build_all ] || [ ! -z $build_python ]; then
 
 mkdir -p ./python
-curl https://www.python.org/ftp/python/3.8.5/Python-3.8.5.tgz -o ./python.tar.gz
+curl -L https://www.python.org/ftp/python/3.8.5/Python-3.8.5.tgz -o ./python.tar.gz
 tar zxf ./python.tar.gz -C ./python --strip 1
 rm ./python.tar.gz
 cd ./python
@@ -630,7 +630,7 @@ fi
 if [ ! -z $build_all ] || [ ! -z $build_pkg_config ]; then
 
 mkdir -p ./pkg-config
-curl https://pkg-config.freedesktop.org/releases/pkg-config-0.29.2.tar.gz -o ./pkg-config.tar.gz
+curl -L https://pkg-config.freedesktop.org/releases/pkg-config-0.29.2.tar.gz -o ./pkg-config.tar.gz
 tar zxf ./pkg-config.tar.gz -C ./pkg-config --strip 1
 rm ./pkg-config.tar.gz
 cd ./pkg-config
@@ -644,10 +644,27 @@ read -p "Press any key to resume ..."
 
 fi
 
+if [ ! -z $build_all ] || [ ! -z $build_rsync ]; then
+
+mkdir -p ./rsync
+curl -L https://download.samba.org/pub/rsync/rsync-3.2.3.tar.gz -o ./rsync.tar.gz
+tar zxf ./rsync.tar.gz -C ./rsync --strip 1
+rm ./rsync.tar.gz
+cd ./rsync
+./configure --prefix=/usr/local --disable-lz4 --disable-xxhash --without-included-zlib
+make -j$(($(nproc)-1))
+make install
+make DESTDIR=/out install
+cd ..
+rm -rf ./rsync
+read -p "Press any key to resume ..."
+
+fi
+
 if [ ! -z $build_all ] || [ ! -z $build_make ]; then
 
 mkdir -p ./make
-curl https://ftp.gnu.org/gnu/make/make-4.3.tar.gz -o ./make.tar.gz
+curl -L https://ftp.gnu.org/gnu/make/make-4.3.tar.gz -o ./make.tar.gz
 tar zxf ./make.tar.gz -C ./make --strip 1
 rm ./make.tar.gz
 cd ./make
@@ -663,7 +680,7 @@ fi
 if [ ! -z $build_all ] || [ ! -z $build_gcc ]; then
 
 mkdir -p ./gcc/out
-curl https://ftp.gnu.org/gnu/gcc/gcc-10.2.0/gcc-10.2.0.tar.gz -o ./gcc.tar.gz
+curl -L https://ftp.gnu.org/gnu/gcc/gcc-10.2.0/gcc-10.2.0.tar.gz -o ./gcc.tar.gz
 tar zxf ./gcc.tar.gz -C ./gcc --strip 1
 rm ./gcc.tar.gz
 cd ./gcc
@@ -683,7 +700,7 @@ fi
 if [ ! -z $build_all ] || [ ! -z $build_binutils ]; then
 
 mkdir -p ./binutils/out
-curl https://ftp.gnu.org/gnu/binutils/binutils-2.35.tar.gz -o ./binutils.tar.gz
+curl -L https://ftp.gnu.org/gnu/binutils/binutils-2.35.tar.gz -o ./binutils.tar.gz
 tar zxf ./binutils.tar.gz -C ./binutils --strip 1
 rm ./binutils.tar.gz
 cd ./binutils/out
@@ -702,7 +719,7 @@ fi
 if [ ! -z $build_all ] || [ ! -z $build_linux_headers ]; then
 
 mkdir -p ./linux_headers
-curl https://chromium.googlesource.com/chromiumos/third_party/kernel/+archive/refs/heads/master.tar.gz -o ./chromiumos_kernel.tar.gz
+curl -L https://chromium.googlesource.com/chromiumos/third_party/kernel/+archive/refs/heads/chromeos-5.10.tar.gz -o ./chromiumos_kernel.tar.gz
 tar zxf ./chromiumos_kernel.tar.gz -C ./linux_headers
 rm ./chromiumos_kernel.tar.gz
 cd ./linux_headers
@@ -716,10 +733,10 @@ fi
 if [ ! -z $build_all ] || [ ! -z $build_glibc ]; then
 
 mkdir -p ./glibc/out
-curl https://ftp.gnu.org/gnu/glibc/glibc-2.27.tar.gz -o ./glibc.tar.gz
+curl -L https://ftp.gnu.org/gnu/glibc/glibc-2.27.tar.gz -o ./glibc.tar.gz
 tar zxf ./glibc.tar.gz -C ./glibc --strip 1
 rm ./glibc.tar.gz
-curl https://dev.gentoo.org/~dilfridge/distfiles/glibc-2.27-patches-3.tar.bz2 -o ./glibc-patches.tar.gz
+curl -L https://dev.gentoo.org/~dilfridge/distfiles/glibc-2.27-patches-3.tar.bz2 -o ./glibc-patches.tar.gz
 tar xjf ./glibc-patches.tar.gz -C ./glibc
 rm ./glibc-patches.tar.gz
 cd ./glibc
@@ -729,7 +746,7 @@ echo $glibc_patch
 patch -p1 --no-backup-if-mismatch -N < $glibc_patch
 done
 cd ./out
-../configure --prefix=/usr/local --libdir=/usr/local/lib64 --enable-kernel=3.2 --with-headers=/out/usr/local/include --without-selinux --disable-nls libc_cv_slibdir=/lib64 --disable-sanity-checks CFLAGS="-O2 -Wno-zero-length-bounds -Wno-maybe-uninitialized -Wno-error=missing-attributes -Wno-error=array-bounds"
+../configure --prefix=/usr/local --libdir=/usr/local/lib64 --enable-kernel=3.2 --with-headers=/out/usr/local/include --without-selinux --disable-nls libc_cv_slibdir=/lib64 --disable-sanity-checks CFLAGS="-O2 -Wno-maybe-uninitialized -Wno-error=missing-attributes -Wno-error=array-bounds -Wno-error=zero-length-bounds"
 make -j$(($(nproc)-1))
 make DESTDIR=/out install
 rm -r /out/lib64
@@ -743,7 +760,7 @@ rm -rf /usr/local/*
 cp -r /out/usr/local/* /usr/local/
 rm -rf /out/*
 pip3 install --upgrade pip
-pip3 install meson ninja pyparsing cryptography
+pip3 install wheel meson ninja pyparsing cryptography
 read -p "Press any key to resume ..."
 
 if [ ! -z $build_all ] || [ ! -z $build_db ]; then
@@ -765,7 +782,7 @@ fi
 if [ ! -z $build_all ] || [ ! -z $build_texinfo ]; then
 
 mkdir -p ./texinfo
-curl https://ftp.gnu.org/gnu/texinfo/texinfo-6.7.tar.gz -o ./texinfo.tar.gz
+curl -L https://ftp.gnu.org/gnu/texinfo/texinfo-6.7.tar.gz -o ./texinfo.tar.gz
 tar zxf ./texinfo.tar.gz -C ./texinfo --strip 1
 rm ./texinfo.tar.gz
 cd ./texinfo
@@ -993,7 +1010,7 @@ fi
 if [ ! -z $build_all ] || [ ! -z $build_nettle ]; then
 
 mkdir -p ./nettle
-curl -L ftp://ftp.gnu.org/gnu/nettle/nettle-3.6.tar.gz -o ./nettle.tar.gz
+curl -L https://ftp.gnu.org/gnu/nettle/nettle-3.7.2.tar.gz -o ./nettle.tar.gz
 tar zxf ./nettle.tar.gz -C ./nettle --strip 1
 rm ./nettle.tar.gz
 cd ./nettle
@@ -1169,7 +1186,7 @@ fi
 if [ ! -z $build_all ] || [ ! -z $build_git ]; then
 
 mkdir -p ./git
-curl https://mirrors.edge.kernel.org/pub/software/scm/git/git-2.28.0.tar.gz -o ./git.tar.gz
+curl -L https://mirrors.edge.kernel.org/pub/software/scm/git/git-2.28.0.tar.gz -o ./git.tar.gz
 tar zxf ./git.tar.gz -C ./git --strip 1
 rm ./git.tar.gz
 cd ./git
@@ -1185,7 +1202,7 @@ fi
 if [ ! -z $build_all ] || [ ! -z $build_lxc ]; then
 
 mkdir -p ./lxc
-curl -L https://github.com/lxc/lxc/archive/lxc-4.0.4.tar.gz -o ./lxc.tar.gz
+curl -L https://github.com/lxc/lxc/archive/lxc-4.0.6.tar.gz -o ./lxc.tar.gz
 tar zxf ./lxc.tar.gz -C ./lxc --strip 1
 rm ./lxc.tar.gz
 cd ./lxc
@@ -1241,7 +1258,7 @@ fi
 if [ ! -z $build_all ] || [ ! -z $build_libxml2 ]; then
 
 mkdir -p ./libxml2
-curl ftp://xmlsoft.org/libxslt/libxml2-2.9.9.tar.gz -o ./libxml2.tar.gz
+curl -L ftp://xmlsoft.org/libxslt/libxml2-2.9.9.tar.gz -o ./libxml2.tar.gz
 tar zxf ./libxml2.tar.gz -C ./libxml2 --strip 1
 rm ./libxml2.tar.gz
 cd ./libxml2
@@ -1509,7 +1526,7 @@ fi
 if [ ! -z $build_all ] || [ ! -z $build_libxslt ]; then
 
 mkdir -p ./libxslt
-curl ftp://xmlsoft.org/libxslt/libxslt-1.1.34.tar.gz -o ./libxslt.tar.gz
+curl -L ftp://xmlsoft.org/libxslt/libxslt-1.1.34.tar.gz -o ./libxslt.tar.gz
 tar zxf ./libxslt.tar.gz -C ./libxslt --strip 1
 rm ./libxslt.tar.gz
 cd ./libxslt
@@ -1542,7 +1559,7 @@ fi
 if [ ! -z $build_all ] || [ ! -z $build_xmlto ]; then
 
 mkdir -p ./xmlto
-curl https://releases.pagure.org/xmlto/xmlto-0.0.28.tar.gz -o ./xmlto.tar.gz
+curl -L https://releases.pagure.org/xmlto/xmlto-0.0.28.tar.gz -o ./xmlto.tar.gz
 tar zxf ./xmlto.tar.gz -C ./xmlto --strip 1
 rm ./xmlto.tar.gz
 cd ./xmlto
@@ -1635,6 +1652,22 @@ read -p "Press any key to resume ..."
 
 fi
 
+if [ ! -z $build_all ] || [ ! -z $build_nodejs ]; then
+
+mkdir -p ./nodejs
+curl -L https://github.com/nodejs/node/archive/refs/tags/v15.14.0.tar.gz -o nodejs.tar.gz
+tar zxf ./nodejs.tar.gz -C ./nodejs --strip 1
+rm ./nodejs.tar.gz
+cd ./nodejs
+./configure --prefix=/usr/local --libdir=/usr/local/lib64
+make -j$(($(nproc)-1))
+make install
+cd ..
+rm -rf ./nodejs
+read -p "Press any key to resume ..."
+
+fi
+
 cat >/usr/local/bin/start-toolchain <<TOOLCHAIN
 export C_INCLUDE_PATH=/usr/local/include/ncurses
 export GCONV_PATH=/usr/local/lib64/gconv
@@ -1649,5 +1682,5 @@ TOOLCHAIN
 chmod 0755 /usr/local/bin/start-toolchain
 
 cd /usr/local
-tar zcvf /out/brunch_toolchain.tar.gz * --owner=0 --group=0
+tar zcvf /out/brunch_toolchain.tar.gz * --owner=1000 --group=1000
 
