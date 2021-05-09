@@ -1248,7 +1248,7 @@ EOF
 make -j$(($(nproc)-1))
 make install
 rm -r /usr/local/var/lib/lxc
-ln -s /home/root/brioche /usr/local/var/lib/lxc
+ln -s /home/chronos/user/brioche /usr/local/var/lib/lxc
 cd ..
 rm -rf ./lxc
 read -p "Press any key to resume ..."
