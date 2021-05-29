@@ -123,7 +123,7 @@ sudo losetup -d "$recovery_image"
 else
 git clone -b master https://github.com/cyxx/extract_android_ota_payload.git rootfs
 cd rootfs
-curl -L http://dl.google.com/chromeos/rammus/13729.56.0/stable-channel/chromeos_13729.56.0_rammus_stable-channel_full_mp-v2.bin-gyydkmbxge3gkllfg6xnqvegcbnkkykn.signed -o ./update.signed
+curl -L https://dl.google.com/chromeos/rammus/13816.64.0/stable-channel/chromeos_13816.64.0_rammus_stable-channel_full_mp-v2.bin-gyydqojrg4ztilgqeclkdtfka3nd5vno.signed -o ./update.signed
 python3 extract_android_ota_payload.py ./update.signed
 cd ..
 if [ ! -f ./rootfs/root.img ]; then echo "ChromeOS rootfs could not be extracted"; rm -r ./rootfs; exit 1; fi
