@@ -1186,7 +1186,7 @@ fi
 if [ ! -z $build_all ] || [ ! -z $build_git ]; then
 
 mkdir -p ./git
-curl -L https://mirrors.edge.kernel.org/pub/software/scm/git/git-2.28.0.tar.gz -o ./git.tar.gz
+curl -L https://mirrors.edge.kernel.org/pub/software/scm/git/git-2.31.1.tar.gz -o ./git.tar.gz
 tar zxf ./git.tar.gz -C ./git --strip 1
 rm ./git.tar.gz
 cd ./git
@@ -1199,10 +1199,40 @@ read -p "Press any key to resume ..."
 
 fi
 
+if [ ! -z $build_all ] || [ ! -z $build_glib ]; then
+
+mkdir -p ./glib
+curl -L https://github.com/GNOME/glib/archive/refs/tags/2.68.2.tar.gz -o ./glib.tar.gz
+tar zxf ./glib.tar.gz -C ./glib --strip 1
+rm ./glib.tar.gz
+cd ./glib
+meson --prefix="/usr/local" build/
+ninja -C build/ install
+cd ..
+rm -rf ./glib
+read -p "Press any key to resume ..."
+
+fi
+
+if [ ! -z $build_all ] || [ ! -z $build_json_glib ]; then
+
+mkdir -p ./json-glib
+curl -L https://github.com/GNOME/json-glib/archive/refs/tags/1.6.2.tar.gz -o ./json-glib.tar.gz
+tar zxf ./json-glib.tar.gz -C ./json-glib --strip 1
+rm ./json-glib.tar.gz
+cd ./json-glib
+meson --prefix="/usr/local" build/
+ninja -C build/ install
+cd ..
+rm -rf ./json-glib
+read -p "Press any key to resume ..."
+
+fi
+
 if [ ! -z $build_all ] || [ ! -z $build_lxc ]; then
 
 mkdir -p ./lxc
-curl -L https://github.com/lxc/lxc/archive/lxc-4.0.6.tar.gz -o ./lxc.tar.gz
+curl -L https://github.com/lxc/lxc/archive/lxc-4.0.9.tar.gz -o ./lxc.tar.gz
 tar zxf ./lxc.tar.gz -C ./lxc --strip 1
 rm ./lxc.tar.gz
 cd ./lxc
